@@ -1,5 +1,4 @@
-Practice
-========
+# Practice
 
 As you can see, there are a lot of in's, out's, and what-have-you's
 (IOWHYs) to processing 16S data. Rather than giving you the fish of some

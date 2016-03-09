@@ -12,6 +12,8 @@ My goal for this document is to help you understand the theory behind 16S data p
 
 This document should be a fun read for advanced undergraduates, graduate students, and postdocs who are interested in getting down and dirty with 16S data. If you know too much, I expect this document will annoy you, because you will recognize its shortcomings.
 
+Anyone familiar with some basic molecular biology and microbial ecology should be able to understand the first sections. The sections about practice, about actually doing stuff with data, will make better sense if you have some experience with the Unix/Linux/Mac command-line terminal (i.e., bash or an equivalent), command-line text processing commands, and a programming language (e.g., Python).
+
 ## What this document is not
 
 This document is not perfect. It is full of my own igorance, ideas, and opinions. Take it with a grain of salt. If you find errors, blame me and not my adviser or the other members of my lab. And do point them out to me!
