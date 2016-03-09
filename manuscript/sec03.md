@@ -1,6 +1,6 @@
 # Data processing theory
 
-Hooray, you have sequence data! Now what? I’ll assume you did paired-end sequencing (but I’ll make a note for those of you who didn’t). Notably, all 454 sequencing is single-ended.
+Hooray, you have sequence data! Now what? I'll assume you did paired-end sequencing (but I'll make a note for those of you who didn't). Notably, all 454 sequencing is single-ended.
 
 ## Raw data and metadata
 
@@ -16,7 +16,7 @@ Before trying to process your dataset, be sure you have the following raw data[^
 -   *Reverse reads* (unless you did single-end sequencing). A fastq file
     with a name like the forward reads only with `_2_` or `_R2_` in it.
     The first line in the file should end with `/2`, indicating that
-    it’s the second read of a pair. Every entry in the reverse reads
+    it's the second read of a pair. Every entry in the reverse reads
     should match an entry in the forward reads. In most cases, the two
     pairs of a read appear in analogous places in the two files (i.e.,
     the forward read entry starting on line $x$ in the forward read file
@@ -25,7 +25,7 @@ Before trying to process your dataset, be sure you have the following raw data[^
 
 -   *Barcode* or *index* ****** *reads*. Depending on your Illumina
     version, this information might be in different places. In some
-    datasets, it’s in the file with the forward reads. In the above
+    datasets, it's in the file with the forward reads. In the above
     example line, the barcode read is `CCGACA` (between the `#` and the
     `/1`). In other datasets, you might find the index reads in a file
     with a name that has `_R3_`, `_I_`, or `_I1_` in it.
@@ -37,11 +37,11 @@ Before trying to process your dataset, be sure you have the following raw data[^
 
 -   *Primer sequences*. The sequences of the primers used in the
     16S amplification. They might also be the reverse complement of
-    what’s in the data.
+    what's in the data.
 
 If you download a dataset or get it from a collaborator, it might come
 in an already-processed format. Depending on your purposes, it might be
-fine to use that data, which will look similar to something we’ll get a
+fine to use that data, which will look similar to something we'll get a
 little further down this pipeline.
 
 Overview of the processing pipeline
@@ -60,12 +60,12 @@ Overview of the processing pipeline
     biologically relevant stuff. There is some freedom about the order
     in which they can be done.
 
-    -   *Removing* (or “trimming”) *primers*. The primers are a
+    -   *Removing* (or "trimming") *primers*. The primers are a
         man-made thing. If there was a mismatch between the primer and
-        the DNA of interest, you’ll only see the primer. We therefore
+        the DNA of interest, you'll only see the primer. We therefore
         chop it off.
 
-    -   *Quality filter* (or “trim”) reads. For every nucleotide in
+    -   *Quality filter* (or "trim") reads. For every nucleotide in
         every read, the sequencer gives some indication of its
         assuredness that that base is the thing it says it is. This
         assuredness is called *quality*: if a base has high quality, you
@@ -77,19 +77,19 @@ Overview of the processing pipeline
         removes sequences or parts of sequences that we think we
         cannot trust.
 
-    -   *Merging* (or “overlapping” or “assembling” or “stitching”)
-        read pairs. When doing paired-end sequencing, it’s desirable for
+    -   *Merging* (or "overlapping" or "assembling" or "stitching")
+        read pairs. When doing paired-end sequencing, it's desirable for
         the two reads in the pair to overlap in the middle. This
         produces a single full-length read whose quality in the middle
         positions is hopefully greater than the quality of either of the
-        two reads that produced it (). There’s no such thing as
-        “merging” for single-end sequencing.
+        two reads that produced it (). There's no such thing as
+        "merging" for single-end sequencing.
 
         ![Merging reads involves aligning the two single-end reads and
         adjusting the quality scores. Q40 is a high quality score; Q2 is
         a low quality.\[fig:merge\]](fig/overlapper)
 
-    -   *Demultiplexing* (or “splitting”). The man-made barcode
+    -   *Demultiplexing* (or "splitting"). The man-made barcode
         sequences are replaced by the names of the samples the sequences
         came from.
 
@@ -101,9 +101,9 @@ Overview of the processing pipeline
         sequences, which is usually much smaller than the number
         of reads.
 
-    -   *Provenancing* (or “mapping” or “indexing”). How many reads of
+    -   *Provenancing* (or "mapping" or "indexing"). How many reads of
         each sequence were in each sample? (Only I call it
-        “provenancing”. I find all the other names I’ve
+        "provenancing". I find all the other names I've
         heard confusing.)
 
 -   **Phase III: OTU calling**. This is a complex enough endeavor that I
@@ -124,32 +124,32 @@ reverse read. In practice, there are two important considerations:
 -   Where do you look for the primer? Does the primer start at the very
     first nucleotide of the read, or a little further in? You can put a
     lot of flexibility in this step without a lot of negative effects,
-    but it’s good to know what’s going on in your data.
+    but it's good to know what's going on in your data.
 
--   What does “match” mean? How many mismatched nucleotides do you allow
+-   What does "match" mean? How many mismatched nucleotides do you allow
     between the read and your primer sequence before you consider the
-    read “bad”? In practice, it’s common to only keep reads that have at
+    read "bad"? In practice, it's common to only keep reads that have at
     most one error in the primer match.
 
 ### Quality filter
 
-For some people, “trim” is synonymous with “quality filter”, but
+For some people, "trim" is synonymous with "quality filter", but
 trimming is only one of two common ways to quality filter:
 
 -   Trimming means truncating your reads at some nucleotide after which
-    the sequence is “bad”. A common approach is to truncate everything
+    the sequence is "bad". A common approach is to truncate everything
     after the first nucleotides whose quality falls below
     some threshold.
 
 -   Global quality filtering means discarding an entire read if the
     average quality of the read is too low. Maybe no individual
     nucleotide falls below your trim threshold, but the general poor
-    quality of the read means that you’d rather not include it
-    in analysis. This criterion is expressed equivalently as “average
-    quality” or “expected number of errors”. I like to throw out reads
+    quality of the read means that you'd rather not include it
+    in analysis. This criterion is expressed equivalently as "average
+    quality" or "expected number of errors". I like to throw out reads
     that have more than two expected errors.
 
-Note that it makes sense to trim before you merge, but it doesn’t make
+Note that it makes sense to trim before you merge, but it doesn't make
 sense to global quality filter before you merge. I work with paired-end
 reads, so I do global quality filtering as my very last step in Phase I.
 
@@ -158,18 +158,18 @@ reads, so I do global quality filtering as my very last step in Phase I.
 Merging is the most complex part of the pre-OTU-calling steps. Merging
 requires you to:
 
--   Find the “best” position for merging. Evern in amplicon sequencing,
+-   Find the "best" position for merging. Evern in amplicon sequencing,
     there are insertions and deletions in the 16S variable regions, so
-    we can’t be sure that all merged reads will be the exactly the
+    we can't be sure that all merged reads will be the exactly the
     same length.
 
--   Decide if the “best” position is good enough. If you have two reads
-    that don’t overlap at all, should you even include it in the
+-   Decide if the "best" position is good enough. If you have two reads
+    that don't overlap at all, should you even include it in the
     downstream analysis?[^5] How good is good enough?
 
 -   Compute the quality of the nucleotides in the merged read using the
     qualities in the original reads. This requires some basic
-    Bayesian statistics. It’s not super-hard, but it was hard enough to
+    Bayesian statistics. It's not super-hard, but it was hard enough to
     be the subject of a 2010 Alm Lab paper.
 
 ### Demultiplexing
@@ -177,7 +177,7 @@ requires you to:
 This step is similar to primer removal:
 
 -   Which of the known barcodes is the best match for this barcode read?
-    That’s a pretty straightforward answer. (What if there’s a tie, you
+    That's a pretty straightforward answer. (What if there's a tie, you
     say? Barcodes are chosen with an error-correcting code so that a tie
     implies that you have at least two errors in the read. Read on.)
 
@@ -192,15 +192,15 @@ counting up how many times each sequence appears in each sample.
 Dereplication has one practical question associated with it:
 
 -   How many times does a sequence have to appear for me to believe it?
-    There is a whole literature about “denoising” reads, essentially
+    There is a whole literature about "denoising" reads, essentially
     inferring which reads are the result of sequencing error and which
     ones are real sequences from rare bacteria. In most data sets, there
-    is a “long tail” of sequences: there are a few abundant sequences
-    and many rare sequences. It’s common to simply drop sequences that
+    is a "long tail" of sequences: there are a few abundant sequences
+    and many rare sequences. It's common to simply drop sequences that
     appear only once in the data set. This is a hack that does some
     simple denoising and reduces the size of the resulting data.
 
-### Chimera removal (or “slaying”)
+### Chimera removal (or "slaying")
 
 As mentioned early on, PCR can produce chimeric sequences. Depending on
 your choices about OTU calling, you may want to remove chimeras after
