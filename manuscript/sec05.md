@@ -12,8 +12,7 @@ world with a tool like Cygwin. I didn't make up those rules, but that's
 how it is: all the serious bioinformatics are done in the non-Windows
 world.
 
-File formats
-------------
+## File formats
 
 The two important file formats are the above-mentioned *fastq* and the
 *fasta*. Fastq is an Illumina-specific raw data format. Fasta is the
@@ -30,7 +29,7 @@ many lines are in a file using the terminal command `wc -l foo.fq`.
 Divide that by four to get the number of entries. The lines in the entry
 are:
 
-1.  The *header* line (or "at" line). It must begin with the
+1. The *header* line (or "at" line). It must begin with the
     at-character `@`. The format of the rest of the line depends on the
     Illumina software version, but in general it gives information about
     the read: the name of the instrument it was sequenced on, the
@@ -56,28 +55,26 @@ are:
     quality line. Confusingly, this encoding has changed in overlapping
     and sometimes non-redundant ways. In the newest Illumina format, the
     encoding goes, from low quality to high quality:
-    `!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI`. `I` means that there is
-    a $10^{-4.1}$ probability that this base is wrong (i.e., a 99.99%
-    chance that it is correct). `H` means that there is a $10^{-4.0}$
-    chance; `G` means $10^{-3.9}$, and so on down to ``. The exclamation
+
+    > `!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI
+
+    `I` means that there is
+    a {$$}10^{-4.1}{/$$} probability that this base is wrong (i.e., a 99.99%
+    chance that it is correct). `H` means that there is a {$$}10^{-4.0}{/$$}
+    chance; `G` means {$$}10^{-3.9}{/$$}, and so on down to ```. The exclamation
     point is special: it means a quality of zero, i.e., that the
     sequencer has no idea what that base is.
 
 Here's an example fastq entry. The sequence and quality lines are too
 long to fit on the page, so I cut out some letters in the middle and put
-those red dots instead. Notice how the quality of the read decreases
+those dots instead. Notice how the quality of the read decreases
 (all the way down to `#`) toward the end of the read. The barcode read
 is `CCGACA` and the `/1` shows that this is a forward read.
 
-``
-
-\[t\]<span>1</span>`@MISEQ578:1:1101:15129:1752#CCGACA/1`
-
-`TATGGTGCCAGCCGCCGCGGTA````GCGAAGGCGGCTCACTGGCTCGATACTGACGCTGAG`
-
-`+`
-
-`>1>11B11B11>A1AA0A00E/````FF@@<@FF@@@@FFFFFFEFF@;FE@FF/9-AAB##`
+    @MISEQ578:1:1101:15129:1752#CCGACA/1
+    TATGGTGCCAGCCGCCGCGGTA...GCGAAGGCGGCTCACTGGCTCGATACTGACGCTGAG
+    +
+    >1>11B11B11>A1AA0A00E/...FF@@<@FF@@@@FFFFFFEFF@;FE@FF/9-AAB##
 
 ### Fasta format
 
@@ -104,11 +101,11 @@ Here's an example fasta entry in the traditional format (i.e., each line
 no more than 80 characters, with the sequence spread over multiple
 lines).
 
-\[t\]<span>1</span>`>seq1;size=1409414;`
-
-`TACGGAGGATCCGAGCGTTATCCGGATTTATTGGGTTTAAAGGGAGCGTAGGCGGGTTGT TAAGTCAGTTGTGAAAGTTTGCGGCTCAACCGTAAAATTGCAGTTGATACTGGCATCCTT GAGTACAGTAGAGGTAGGCGGAATTCGTGGTGTAGCGGTGAAATGCTTAGATATCACGAA GAACTCCGATTGCGAAGGCAGCCTGCTGGACTGTAACTGACGCTGATGCTCGAAAGTGTG`
-
-`GGTATCAAACAGG`
+~~~~~~~~
+>seq1;size=1409414;
+TACGGAGGATCCGAGCGTTATCCGGATTTATTGGGTTTAAAGGGAGCGTAGGCGGGTTGT TAAGTCAGTTGTGAAAGTTTGCGGCTCAACCGTAAAATTGCAGTTGATACTGGCATCCTT GAGTACAGTAGAGGTAGGCGGAATTCGTGGTGTAGCGGTGAAATGCTTAGATATCACGAA GAACTCCGATTGCGAAGGCAGCCTGCTGGACTGTAACTGACGCTGATGCTCGAAAGTGTG
+GGTATCAAACAGG
+~~~~~~~~
 
 ### Other formats
 
@@ -119,8 +116,7 @@ sff files to fastq files with only a minor loss of information.
 Unluckily, 454 sequence data has its own in's and out's that are beyond
 the scope of this document. Caveat sequentor.[^7]
 
-Tools
------
+## Tools
 
 Everything in this document up to this point will help you be critical
 of an analysis pipeline. This is true whether you use an existing
@@ -139,7 +135,7 @@ doing. If you're happy to trust the QIIME maintainers to have made a
 sensible tool, then go download that and start reading their
 documentation. If you're feeling more inquisitive, read on.
 
-### Usearch
+### usearch
 
 The great and mighty `usearch` underlies a lot of 16S data processing.
 QIIME is built on the back of `usearch`. `usearch` is a single program
@@ -151,8 +147,7 @@ low-level: if you want to do some medium-lifting (like primer removal
 and demultiplexing) but not heavy-lifting (like merging, quality
 filtering, clustering, or sequence alignment), then `usearch` is for
 you. The potentially bad thing about `usearch` is that it's made by a
-single guy and is closed source. He describes his methods, but no one
-can check the code to make sure it does what he says it does.
+single person and is closed source.
 
 `usearch` also has a funny caveat: newer versions come in two flavors,
 free and wildly expensive. This means that mere mortals (i.e.,
@@ -207,4 +202,3 @@ language with great documentation. The people around me use it. It has a
 good bioinformatics package (biopython). It's relatively slow but I
 don't care because I spend much more time programming that I do actually
 running data.
-
