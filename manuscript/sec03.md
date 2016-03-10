@@ -31,7 +31,7 @@ These steps take the raw data and turn it into biologically relevant stuff. Ther
 - *Merging* (or "overlapping" or "assembling" or "stitching") read pairs. When doing paired-end sequencing, it's desirable for the two reads in the pair to overlap in the middle. This produces a single full-length read whose quality in the middle positions is hopefully greater than the quality of either of the two reads that produced it (). There's no such thing as "merging" for single-end sequencing.
 - *Demultiplexing* (or "splitting"). The man-made barcode sequences are replaced by the names of the samples the sequences came from.
 
-![**Merging aligns reads, makes a new sequence, and computes new quality scores.** When two bases match, the new quality can be higher than either of the original qualities. When bases don't match, we use the base with the better quality, but we have to reduce that base's quality. Overhanging bases and their qualities are copied right into the merged sequence.](fig/merge-quality.png)
+![**Merging aligns reads, makes a new sequence, and computes new quality scores.** When two bases match, the new quality can be higher than either of the original qualities. When bases don't match, we use the base with the better quality, but we have to reduce that base's quality. Overhanging bases and their qualities are copied right into the merged sequence.](images/merge-quality.png)
 
 ### Phase II
 
