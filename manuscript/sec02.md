@@ -18,6 +18,8 @@ After a sample is taken, the cells in the sample are lysed, typically using some
 
 In theory, sequencing all the DNA in the sample at some depth will give as much information as just sequencing the 16S gene alone. In practice, this approach is more expensive and, in terms of the bioinformatics, much more complex. You'll need to go elsewhere to learn about the theory and practice of metagenomic sequencing. (Confusingly, the adjective "metagenomic" is also applied to 16S amplicon sequencing of bacterial communities, since these samples have more than one genome.)
 
+### Variable regions
+
 In the amplicon sequencing approach, PCR is used to amplify a section of the 16S gene. The size of the sequenced section is limited by the length of reads produced by high-throughput sequencing. The sections of the 16S gene that are amplified are named according to what variable regions of the gene are covered. There are nine variable regions, but there isn't an exact definition of where they begin and end.
 
 - *V1-V2* (the first two variable regions). This section of the gene provides better taxonomic resolution for some bacteria associated with the skin microbiome, so skin studies sometimes sequence V1-V2.
@@ -33,9 +35,15 @@ Compared to the metagenomic approach, the amplicon-based approach has some advan
 The process of extracting DNA from bacterial cells and then amplifying a 16S region introduces certain biases into the resulting sequence data. These effects mean its better to look for changes in bacterial community structure rather than assert that such-and-such a species is more abundant than other-and-such a species. It also means that large effects, like variations over orders of magnitude, are to be trusted far more than smaller changes. These grains of salt to be kepts in mind are
 *extraction bias*, *PCR bias*, and PCR *chimeras*.
 
+### Extraction bias
+
 The strongest effect is from extraction bias: different cells respond differently to different extraction protocols. Splitting a sample and using different extraction protocols on the different parts will produce markeldy different results. The original HMP effort suffered a big surprise during early data analysis: no matter how you slice it, the biggest signal in the HMP data is "center". Each sample in HMP was processed at one of the three sequencing centers, each of which used their own extraction protocol. The thing that makes two samples most different in the HMP data is if they were sequenced at different centers.
 
-*PCR bias* is less important than extraction bias. I don't think PCR bias is a huge problem, but it's good to have heard about it. First, even though the PCR primers bind a "constant" region, some bacteria in the sample will have different nucleotides there, meaning that the PCR primers will bind with different affinities to the DNA of different bacteria. This effect decreases the number of reads from bacteria whose constant regions don't perfectly match the primer.[^2] Second, it's known that PCR has different efficiencies for different types of sequences, meaning that some 16S variable regions will amplify better than others. Third, statistical fluctuations can occur, especially in low-diversity samples. This means that a sequence that, by chance, gets lots of amplification in early PCR cycles could dominate the sample in late PCR cycles.
+### PCR bias
+
+*PCR bias* is less important than extraction bias. I don't think PCR bias is a huge problem, but it's good to have heard about it. First, even though the PCR primers bind a "constant" region, some bacteria in the sample will have different nucleotides there, meaning that the PCR primers will bind with different affinities to the DNA of different bacteria. This effect decreases the number of reads from bacteria whose constant regions don't perfectly match the primer.[^2]
+
+Second, it's known that PCR has different efficiencies for different types of sequences, meaning that some 16S variable regions will amplify better than others. Third, statistical fluctuations can occur, especially in low-diversity samples. This means that a sequence that, by chance, gets lots of amplification in early PCR cycles could dominate the sample in late PCR cycles.
 
 [^2]: It may be that there are a lot of interesting bugs whose 16S sequences are so divergent that they don't match the typical primers (cf. [Brown *et al.*](http://dx.doi.org/10.1038/nature14486)).
 

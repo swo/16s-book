@@ -56,12 +56,15 @@ are:
     and sometimes non-redundant ways. In the newest Illumina format, the
     encoding goes, from low quality to high quality:
 
-    > `\`!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI`
+    ~~~~~~~~
+    `!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI
+    ~~~~~~~~
 
-    `I` means that there is
+    The letter `I` means that there is
     a {$$}10^{-4.1}{/$$} probability that this base is wrong (i.e., a 99.99%
     chance that it is correct). `H` means that there is a {$$}10^{-4.0}{/$$}
-    chance; `G` means {$$}10^{-3.9}{/$$}, and so on down to `\``. The exclamation
+    chance; `G` means {$$}10^{-3.9}{/$$}, and so on down to the 
+    backquote character. The exclamation
     point is special: it means a quality of zero, i.e., that the
     sequencer has no idea what that base is.
 
@@ -178,7 +181,7 @@ data.
 The second best tool is some computational skills. This means
 familiarity with the basic tools of the Unix terminal (`cat`, `cd`,
 `cp`, `ls`, `mkdir`, `mv`, `rm`, `head`, `less`, `sed` or `awk`, `wc`,
-and `grep`) and the ability to use some programming language. Rather
+ `grep`, and `vi` or `emacs`) and the ability to use some programming language. Rather
 than say what programming language is best, I'll share some criteria to
 help you decide what language is best:
 
@@ -205,3 +208,34 @@ language with great documentation. The people around me use it. It has a
 good bioinformatics package (biopython). It's relatively slow but I
 don't care because I spend much more time programming that I do actually
 running data.
+
+## Some early challenges
+
+### Rolling your own
+
+I hear a lot of people say they want to build computational skills.
+The way you do that is by learning more and building stuff. Personal
+anecdote: I worked for a year in a lab that used Fortran to do most
+of its computation. I had previously done most of my computational work
+in Mathematica (since I was a physics major). After a few months, I
+took off one full week of work to read and do all the exercises in
+Mark Lutz's _Learning Python_. It was one of the best investments I've
+ever made. You learn more by putting in the time. It will pay off.
+
+Another personal anecdote: after working with QIIME and then with
+another grad student's codebase, I finally decided to write my own
+16S processing software from scratch. I learned most of what's in this
+document as I learned what I had to do to write that software. If
+starting with a real big kid script that does real data processing
+sounds like too much, try working on the problems at [Rosalind](http://www.rosalind.info).
+They start out easy and get progressively harder. It can be a nice way
+to do something for a half hour and get a gold star. The instant
+gratification can be a relief.
+
+### Looking at real data
+
+If you're reading this packet, you probably have your own data set
+in hand. If not, two great places to get some data to play with are
+the HMP project's [raw sequences](http://hmpdacc.org/HMR16S) or the
+data generated in [Caporaso *et al.*](10.1186/gb-2011-12-5-r50) from
+[MG-RAST](http://metagenomics.anl.gov).

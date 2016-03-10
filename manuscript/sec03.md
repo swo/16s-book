@@ -38,7 +38,10 @@ These steps take the raw data and turn it into biologically relevant stuff. Ther
 These steps compact the data and make it easier to work with when calling OTUs. They can happen simultaneously.
 
 - *Dereplicating*. There are fewer *sequences* (strings of `ACGT`) than there are *reads*. This step identifies the set of unique sequences, which is usually much smaller than the number of reads.
-- *Provenancing* (or "mapping" or "indexing"). How many reads of each sequence were in each sample? (Only I call it "provenancing". I find all the other names I've heard confusing.)
+- *Provenancing* (or "mapping" or "indexing"). How many reads of each sequence were in each sample? (Only I call it "provenancing"[^3]. I find all the other names I've heard confusing.)
+
+[^3] In archaeology, an artifact's _provenance_ is the place within the archaeological
+site where it was found.
 
 ### Phase III: OTU calling
 
@@ -47,6 +50,9 @@ This is a complex enough endeavor that I will break it out into a separate secti
 ### Phase IV: Fun & profit.
 
 The part where you actually use your data! This part is outside the scope of this work.
+I do, however, encourage you to use the same intellectual attitude that's promulgated
+here: don't just use an analytical tool because it's popular or because someone else
+used it. Look inside the sausage as best you can.
 
 ## Details of each step
 
@@ -75,6 +81,9 @@ Merging is the most complex part of the pre-OTU-calling steps. Merging requires 
 - Find the "best" position for merging. Evern in amplicon sequencing, there are insertions and deletions in the 16S variable regions, so we can't be sure that all merged reads will be the exactly the same length.
 - Decide if the "best" position is good enough. If you have two reads that don't overlap at all, should you even include it in the downstream analysis?[^5] How good is good enough?
 - Compute the quality of the nucleotides in the merged read using the qualities in the original reads. This requires some basic Bayesian statistics. It's not super-hard, but it was hard enough to be the subject of (among others) a [2010 Alm Lab paper](http://dx.doi.org/10.1371/journal.pone.0011840) and a [2015 paper](http://dx.doi.org/10.1093/bioinformatics/btv401) from the maker of `usearch`.
+
+I think it's worth noting that most people use `usearch`, which will come up later, to
+merge their sequences. 
 
 ### Demultiplexing
 
