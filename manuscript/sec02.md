@@ -6,9 +6,11 @@ By "16S data" I mean amplicon sequencing of some section of the bacterial 16S ge
 
 All bacteria (and archaea) have at least one copy of the 16S gene in their genome.[^kembel] The gene has some sections that are *conserved*, meaning that they are very similar across all bacteria, and some sections that are *variable*. The idea behind 16S sequencing is that the variable regions are not under strong evolutionary pressure, so random mutations accumulate there. Closely-related bacteria will have more similar variable regions than distantly-related bacteria.
 
-![**The 16S gene has variable regions.** These are nucleotide positions in the aligned 94% OTUs in [Greengenes](http://dx.doi.org/10.1128/AEM.03006-05). "Variability" (which I made up for the purposes of this figure) at a position is {$$}1-{/$$} the fraction of OTUs that had the most common nucleotide at that position. For example, if all OTUs had `A` at a position, the "variability" is 0. If half of the OTUs had `A` at that position, the "variability" is {$$}0.5{/$$}. The actual plot is very spiky, so I smoothed over 50 nucleotide windows. This shows you that there are subsequences of the gene that are more variable than others.](fig/variab.pdf)
+To get a feel for the variability at different positions in the gene, I looked at the aligned 94% OTUs in ![Greengenes](http://dx.doi.org/10.1128/AEM.03006-05). "Variability" (which I made up for the purposes of this figure) at a position is one minus the fraction of OTUs that had the most common nucleotide at that position. For example, if all OTUs had `A` at a position, the "variability" is 0. If half of the OTUs had `A` at that position, the "variability" is {$$}0.5{/$$}. The actual plot is very spiky, so I smoothed over 50 nucleotide windows. This shows you that there are subsequences of the gene that are more variable than others.
 
-[^kembel]: It's not unusual for bacteria to have multiple copies of the 16S gene, and those copies might not be identical to one another. Some people are concerned by the effect this could have on 16S data (e.g., [Kembel *et al*.](http://dx.doi.org/10.1371/journal.pcbi.1002743)
+![The 16S gene has variable regions.](fig/variab.png)
+
+[^kembel]: It's not unusual for bacteria to have multiple copies of the 16S gene, and those copies might not be identical to one another. Some people are concerned by the effect this could have on 16S data (e.g., [Kembel *et al*.](http://dx.doi.org/10.1371/journal.pcbi.1002743)).
 
 ## Amplifying the gene
 
@@ -20,7 +22,7 @@ In the amplicon sequencing approach, PCR is used to amplify a section of the 16S
 
 - *V1-V2* (the first two variable regions). This section of the gene provides better taxonomic resolution for some bacteria associated with the skin microbiome, so skin studies sometimes sequence V1-V2.
 - *V4* (variable region 4). This section of the gene provides good taxonomic resolution for bacteria associated with the gut microbiome, so it is the most popular section. I get the sense that V4 is also the best "catch-all" region, but I don't know of a good reference to back up that sense.
-- *V5-V6*. I've only seen this section in projects that aim to be particularly complete (e.g., the [Human Microbiome Project](http://hmpdacc.org/)).
+- *V5-V6*. I've only seen this section in projects that aim to be particularly complete (e.g., the [Human Microbiome Project](http://hmpdacc.org)).
 
 PCR reactions on these regions have primers that match the constant regions around the variable regions. Papers should always mention which primers they used, and they usually also mention the amplified region. The primers have names like 8F (meaning, a forward primer starting at nucleotide 8 in the gene) and 1492R (meaning, a reverse primer starting at nucleotide 1492).
 
@@ -35,7 +37,7 @@ The strongest effect is from extraction bias: different cells respond differentl
 
 *PCR bias* is less important than extraction bias. I don't think PCR bias is a huge problem, but it's good to have heard about it. First, even though the PCR primers bind a "constant" region, some bacteria in the sample will have different nucleotides there, meaning that the PCR primers will bind with different affinities to the DNA of different bacteria. This effect decreases the number of reads from bacteria whose constant regions don't perfectly match the primer.[^2] Second, it's known that PCR has different efficiencies for different types of sequences, meaning that some 16S variable regions will amplify better than others. Third, statistical fluctuations can occur, especially in low-diversity samples. This means that a sequence that, by chance, gets lots of amplification in early PCR cycles could dominate the sample in late PCR cycles.
 
-[^2]: It may be that there are a lot of interesting bugs whose 16S sequences are so divergent that they don't match the typical primers (cf. doi:10.1038/nature14486).
+[^2]: It may be that there are a lot of interesting bugs whose 16S sequences are so divergent that they don't match the typical primers (cf. [Brown *et al.*](http://dx.doi.org/10.1038/nature14486)).
 
 In general, PCR bias is not as bad when there is more DNA and (relatedly) when the PCR is run for fewer cycles.
 
@@ -65,4 +67,4 @@ Samples to be sequenced on an Illumina machine need to have Illumina-specific *a
 
 All of these pieces --the 16S region you're interested in, forward and reverse primers, barcodes, diversity region, and Illumina adapters-- are all made into a single *PCR construct*, which is a single piece of DNA. The sequencer reads the nucleotides in the construct and uses its knowledge about the arrangement of the construct to infer which nucleotides are the region of interest and which are the barcode.
 
-![**An example PCR construct.** The parts labeled on top are interesting only for technical reasons. The parts on the bottom have information that's useful for someone analyzing sequence data.](fig/pcr-construct.pdf)
+![**An example PCR construct.** The parts labeled on top are interesting only for technical reasons. The parts on the bottom have information that's useful for someone analyzing sequence data.](fig/pcr-construct.png)
