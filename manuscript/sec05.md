@@ -56,12 +56,12 @@ are:
     and sometimes non-redundant ways. In the newest Illumina format, the
     encoding goes, from low quality to high quality:
 
-    > `!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI
+    > `\`!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI`
 
     `I` means that there is
     a {$$}10^{-4.1}{/$$} probability that this base is wrong (i.e., a 99.99%
     chance that it is correct). `H` means that there is a {$$}10^{-4.0}{/$$}
-    chance; `G` means {$$}10^{-3.9}{/$$}, and so on down to ```. The exclamation
+    chance; `G` means {$$}10^{-3.9}{/$$}, and so on down to `\``. The exclamation
     point is special: it means a quality of zero, i.e., that the
     sequencer has no idea what that base is.
 
@@ -103,7 +103,10 @@ lines).
 
 ~~~~~~~~
 >seq1;size=1409414;
-TACGGAGGATCCGAGCGTTATCCGGATTTATTGGGTTTAAAGGGAGCGTAGGCGGGTTGT TAAGTCAGTTGTGAAAGTTTGCGGCTCAACCGTAAAATTGCAGTTGATACTGGCATCCTT GAGTACAGTAGAGGTAGGCGGAATTCGTGGTGTAGCGGTGAAATGCTTAGATATCACGAA GAACTCCGATTGCGAAGGCAGCCTGCTGGACTGTAACTGACGCTGATGCTCGAAAGTGTG
+TACGGAGGATCCGAGCGTTATCCGGATTTATTGGGTTTAAAGGGAGCGTAGGCGGGTTGT 
+TAAGTCAGTTGTGAAAGTTTGCGGCTCAACCGTAAAATTGCAGTTGATACTGGCATCCTT 
+GAGTACAGTAGAGGTAGGCGGAATTCGTGGTGTAGCGGTGAAATGCTTAGATATCACGAA 
+GAACTCCGATTGCGAAGGCAGCCTGCTGGACTGTAACTGACGCTGATGCTCGAAAGTGTG
 GGTATCAAACAGG
 ~~~~~~~~
 
