@@ -162,14 +162,24 @@ In contrast, multiplexing adds a barcode or "tag" to the 16S amplicon. Each barc
 - *Negative controls*: Usually just vehicle with no DNA, as a way to check for contamination from reagents or poor sample preparation.
 - *Positive controls*: Mock communities of known composition, which can be used to check that the sequencing was not "weird". If you have a lot of samples from the same project and you need to run them in more than one lane, you can use the positive controls as an internal check that sequencing proceeded similarly across lanes.
 
-The bioinformatic cost of multiplexing is that the reads must be *demultiplexed* in the analysis stage. This is not very difficult.
+The bioinformatic cost of multiplexing is that the reads must be *demultiplexed*
+in the analysis stage. This is easy.
 
 ## Sequencing
 
-A little more work has to be done before putting the sample in the sequencer. These steps will depend on the sequencing platform. Here I'll talk about Illumina because it's popular and I have experience with it.
+A little more work has to be done before putting the sample in the sequencer.
+These steps will depend on the sequencing platform. Here I'll talk about
+Illumina because it's popular and I have experience with it. If you're using
+a different sequencing platform, then you'll need to learn about the quirks
+of that platform elsewhere.
 
 Samples to be sequenced on an Illumina machine need to have Illumina-specific *adapters* added in another PCR. These adapters allow the DNA amplicons to bind the flowcell where they are sequenced. It is sometimes also desirable to have a *diversity region* added between the adapter and the 16S primer. The Illumina sequencers expect to see a diversity of nucleotides at every read position. In amplicon sequencing, almost all the reads are the same through the primer region, which freaks out the sequencer. A diversity region is just some random nucleotides that helps the sequencer do its job. In our lab we use `YRYR`, where `Y` means `T` or `C` and `R` means `G` or `A`.
 
-All of these pieces --the 16S region you're interested in, forward and reverse primers, barcodes, diversity region, and Illumina adapters-- are all made into a single *PCR construct*, which is a single piece of DNA. The sequencer reads the nucleotides in the construct and uses its knowledge about the arrangement of the construct to infer which nucleotides are the region of interest and which are the barcode.
+All of these pieces ---the 16S region you're interested in, forward and reverse
+primers, barcodes, diversity region, and Illumina adapters--- are all made into
+a single *PCR construct*, which is a single piece of DNA. The sequencer reads
+the nucleotides in the construct and uses its knowledge about the arrangement of
+the construct to infer which nucleotides are the region of interest and which
+are the barcode.
 
 ![An example PCR construct.](images/pcr-construct.png)
