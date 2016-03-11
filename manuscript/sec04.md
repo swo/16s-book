@@ -226,4 +226,4 @@ should be kept in separate OTUs. This approach is confusingly called
 calling. It's not very popular beyond the Alm Lab, but it's a good way to call
 OTUs.
 
-![Distribution-based OTU calling separates sequence-similar reads if they are distributed differently across samples.](images/dbc.jpg)
+![Distribution-based OTU calling separates sequence-similar reads if they are distributed differently across samples.](images/dbc.png)

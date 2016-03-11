@@ -3,4 +3,4 @@ sec02.md
 sec03.md
 sec04.md
 sec05.md
-book.md
+sec06.md

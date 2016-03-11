@@ -6,6 +6,8 @@ Hooray, you have sequence data! Now what? I'll assume you did paired-end sequenc
 
 Before trying to process your dataset, be sure you have the following raw data[^3] and metadata:
 
+[^3]: In what follows, I'll talk about "raw data", by which I mean data that you would get from the sequencing center. There is actually a more raw kind of data that comes right out of the sequencing machine that gets processed right away. On the Illumina platform, this data is CASAVA. Different version of CASAVA produce slightly different output, and every sequencer might have a different version of CASAVA, so be prepared for slight variations in the format of your raw data.
+
 - *Forward reads*. For Illumina, this means a *fastq* file that might have a name like:
 ~~~~~~~~
 `130423Alm_D13-1939_1_sequence.fastq`
@@ -57,6 +59,9 @@ more skeptical. In general, reads tend to decrease in quality as they extend,
 meaning that we get less sure that the sequence is correct the further away from
 the primer we go. Some reads also have overall low quality.[^4] Quality
 filtering removes sequences or parts of sequences that we think we cannot trust.
+
+[^4]: Annoyingly, it's my experience that the first reads in the raw data are substantially worse than most of the reads in the file. In the dataset I'm looking at, the first 3,000 or so reads (of 13.5 million total) have an average quality that is about half of what's typical for that dataset.
+
 - *Merging* (or "overlapping" or "assembling" or "stitching") read pairs. When
 doing paired-end sequencing, it's desirable for the two reads in the pair to
 overlap in the middle. This produces a single full-length read whose quality in
@@ -117,6 +122,9 @@ all merged reads will be the exactly the same length.
 - *Decide if the "best" position is good enough.* If you have two reads that don't
 overlap at all, should you even include it in the downstream analysis?[^5] How
 good is good enough?
+
+[^5]: If you had two paired-end reads that didn't overlap but you were somehow sure of the final amplicon size, then you could insert a bunch of `N`'s in between. This is an advanced and specialized topic.
+
 - *Compute the quality of the nucleotides in the merged read using the qualities in
 the original reads.* This requires some basic Bayesian statistics. It's not
 super-hard, but it was hard enough to be the subject of (among others) a [2010
