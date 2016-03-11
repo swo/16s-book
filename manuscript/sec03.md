@@ -60,6 +60,8 @@ meaning that we get less sure that the sequence is correct the further away from
 the primer we go. Some reads also have overall low quality.[^4] Quality
 filtering removes sequences or parts of sequences that we think we cannot trust.
 
+![Reads differ in overall quality and number of "decent" reads.](images/quality-dec.png)
+
 [^4]: Annoyingly, it's my experience that the first reads in the raw data are substantially worse than most of the reads in the file. In the dataset I'm looking at, the first 3,000 or so reads (of 13.5 million total) have an average quality that is about half of what's typical for that dataset.
 
 - *Merging* (or "overlapping" or "assembling" or "stitching") read pairs. When
