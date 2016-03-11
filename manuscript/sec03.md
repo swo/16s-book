@@ -8,7 +8,7 @@ Before trying to process your dataset, be sure you have the following raw data[^
 
 - *Forward reads*. For Illumina, this means a *fastq* file that might have a name like:
 ~~~~~~~~
-130423Alm_D13-1939_1_sequence.fastq
+`130423Alm_D13-1939_1_sequence.fastq`
 ~~~~~~~~
 Giveaways that this is a forward read are something like `_1_` or `_R1_` in the
 filename. The first line of the file should also end with `/1`. For example, the
@@ -76,8 +76,7 @@ These steps compact the data and make it easier to work with when calling OTUs. 
 
 [^merge]: I adapted this figure from the `usearch` manual's [website](http://drive5.com/usearch/manual/merge_pair.html).
 
-[^3]: In archaeology, an artifact's _provenance_ is the place within the archaeological
-site where it was found.
+[^3]: In archaeology, an artifact's _provenance_ is the place within the archaeological site where it was found.
 
 ### Phase III: OTU calling
 
@@ -139,7 +138,7 @@ quality. It will give you a sense of whether your sequencing run as a whole was
 good, and it will give you a sense of whether you got the sort of good-quality
 length you were hoping for.
 
-![quality.png](An read quality report delivered by the Illumina software.)
+![images/quality.png](An read quality report delivered by the Illumina software.)
 
 There are two common ways to quality filter:
 
@@ -153,8 +152,7 @@ include it in analysis. This criterion is expressed equivalently as "average
 quality" or "expected number of errors".[^flyv] When I work with 250 bp amplicons,
 I like to throw out reads that have more than two expected errors.
 
-[^flyv]: There's a nice paper by [Edgar & Flyvbjerg](http://dx.doi.org/10.1093/bioinformatics/btv401)
-(doi:10.1093/bioinformatics/btv401) that shows how to compute this.
+[^flyv]: There's a nice paper by [Edgar & Flyvbjerg](http://dx.doi.org/10.1093/bioinformatics/btv401) (doi:10.1093/bioinformatics/btv401) that shows how to compute this.
 
 It makes sense to merge then global quality filter or to quality trim then merge.
 It does not make sense to merge then quality trim. I worked with paired-end reads,
@@ -198,8 +196,7 @@ whole literature about "denoising" reads, so I will just mention
 [*DADA*](http://dx.doi.org/10.1186/1471-2105-13-283), which
 seems to be the best-performing algorithm available.[^dada]
 
-[^dada]: In case you didn't get the pun, Dada is the name of an an art movement
-about, in part, creating irrational, chaotic art.
+[^dada]: In case you didn't get the pun, Dada is the name of an an art movement about, in part, creating irrational, chaotic art.
 
 ### Chimera removal (or "slaying")
 
@@ -224,5 +221,4 @@ ever-improving methods, notably, the [UPARSE](http://dx.doi.org/10.1038/nmeth.26
 algorithm, which is the new `usearch`'s stardard way of simultaneously calling
 *de novo* OTUs and doing *de novo* chimera detection.
 
-[^chimera]: The Chimera was a monster in Greek mythology. It had the head of a
-lion and the tail of a snake. It was slain by the hero Bellerophon.
+[^chimera]: The Chimera was a monster in Greek mythology. It had the head of a lion and the tail of a snake. It was slain by the hero Bellerophon.

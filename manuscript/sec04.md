@@ -25,17 +25,9 @@ Monera[^monera] into Bacteria and Archaea, showing that Eukaryotes and Archaea a
 cousins than are Archaea and Bacteria. The 16S gene was therefore a promising
 practical candidate for distinguishing bacterial *species*.[^known]
 
-[^known]: In 1991, PCR-amplified portions of the 16S gene were used to identify
-known species. The paper has a prescient final sentence:
-"While this [i.e., PCR] should not be a routine substitute for growing bacteria,
-picking individual colonies, and confirming their phenotypic and biochemical
-identities, it will enable experiments to be performed that
-were not previously possible." ([Weisburg *et al.*](http://jb.asm.org/content/173/2/697.short),
-*J Bacteriol* **173** [1991])
+[^known]: In 1991, PCR-amplified portions of the 16S gene were used to identify known species. The paper has a prescient final sentence: "While this [i.e., PCR] should not be a routine substitute for growing bacteria, picking individual colonies, and confirming their phenotypic and biochemical identities, it will enable experiments to be performed that were not previously possible." ([Weisburg *et al.*](http://jb.asm.org/content/173/2/697.short), *J Bacteriol* **173** [1991])
 
-[^monera]: I'm shocked that, attending public high school in the early 2000s,
-we were *still* taught about Monera and Protista rather than about Bacteria,
-Archaea, and Eukaryota.
+[^monera]: I'm shocked that, attending public high school in the early 2000s, we were *still* taught about Monera and Protista rather than about Bacteria, Archaea, and Eukaryota.
 
 The species concept is easy to define for sexual macroorganisms: two
 living things of opposite sex are in the same species if they can produce
@@ -77,9 +69,7 @@ doing, you'll probably want to do very little (if any) grouping of sequences
 into OTUs, since the unique sequences are, in a sense, the best information you
 have about those organisms.
 
-[^philo]: There is a [fun review](http://www.jstor.org/stable/10.1086/506237) of
-the different ways ecological units are viewed from ontological and functional
-perspectives.
+[^philo]: There is a [fun review](http://www.jstor.org/stable/10.1086/506237) of the different ways ecological units are viewed from ontological and functional perspectives.
 
 Regardless of how you call OTUs, I think you should call them in a way that doesn't throw away information that could be useful or interesting. Only throw away information that you are sure you won't find interesting for *any* downstream analysis. You might be able to tell that I think that OTUs are often called too liberally early on. Having these reduced chunks of information can make it easier to think about your data, but beware: you want those chunks to be meaningful and the best information you have to answer the questions you want to answer.
 
@@ -96,9 +86,7 @@ information is to assign *lineages* (or "taxonomies") to each OTU. A lineage is
 usually an assignment of that sequence to the taxonomic *ranks:* kingdom (or
 "domain"), phylum, class, order, family, genus, and species.[^ranks]
 
-[^ranks]: Weird stuff can happen here: there are other ranks like subclass, and sometimes a
-sequence could, say, get assigned to a genus but not a class. (This is the
-difference between the two types of RDP classifier output: `allrank` and `fixrank`.)
+[^ranks]: Weird stuff can happen here: there are other ranks like subclass, and sometimes a sequence could, say, get assigned to a genus but not a class. (This is the difference between the two types of RDP classifier output: `allrank` and `fixrank`.)
 
 Confusingly, in some cases, OTUs are in fact called using lineage assignments.
 It's useful to keep these two concepts separate. For example, it's common to
@@ -176,8 +164,7 @@ assigns reads heuristically (crudely speaking, this can mean "randomly"). Two
 very similar sequences in your dataset might get assigned to Greengenes OTUs
 that have different taxonomies.[^plug]
 
-[^usearch]: Confusingly, USEARCH is the name of an alignment algorithm and
-`usearch` is the name of the program that does USEARCH, UPARSE, and other stuff.
+[^usearch]: Confusingly, USEARCH is the name of an alignment algorithm and `usearch` is the name of the program that does USEARCH, UPARSE, and other stuff.
 
 [^plug]: This particular quirk confused me for a long time. When working on a
 mouse microbiome project, I found that many sequences in my dataset were very
@@ -220,9 +207,7 @@ an OTU that is known all the way down to the genus, and you would mistakenly
 think that your sequence had a lot of taxonomic information in it. RDP also
 seems to be pretty robust to changes in read length.
 
-[^utax]: I'm excited for when Bob Edgars, maker of `usearch`, will publish a paper
-about [UTAX](http://www.drive5.com/usearch/manual/utax_algo.html), which he says
-will be faster than RDP and will give "informative" confidence values.
+[^utax]: I'm excited for when Bob Edgars, maker of `usearch`, will publish a paper about [UTAX](http://www.drive5.com/usearch/manual/utax_algo.html), which he says will be faster than RDP and will give "informative" confidence values.
 
 ### Distribution-based methods
 

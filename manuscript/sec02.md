@@ -18,15 +18,9 @@ variable than others.
 
 ![The 16S gene has variable regions.](images/variab.png)
 
-[^chloro]: Chloroplasts, found in algae and other eukaryotes, have a ribosomal
-gene that is very similar to 16S that often ends up in 16S data sets.
+[^chloro]: Chloroplasts, found in algae and other eukaryotes, have a ribosomal gene that is very similar to 16S that often ends up in 16S data sets.
 
-[^kembel]: It's not unusual for bacteria to have multiple copies of the 16S
-gene, and those copies might not be identical to one another. Some people are
-concerned by the effect this could have on interpretations of 16S data (e.g., [Kembel *et
-al*.](http://dx.doi.org/10.1371/journal.pcbi.1002743);
-doi:10.1371/journal.pcbi.1002743 and [Case *et al.*](http://dx.doi.org/10.1128/AEM.01177-06);
-doi:10.1128/AEM.01177-06).
+[^kembel]: It's not unusual for bacteria to have multiple copies of the 16S gene, and those copies might not be identical to one another. Some people are concerned by the effect this could have on interpretations of 16S data (e.g., [Kembel *et al*.](http://dx.doi.org/10.1371/journal.pcbi.1002743); doi:10.1371/journal.pcbi.1002743 and [Case *et al.*](http://dx.doi.org/10.1128/AEM.01177-06); doi:10.1128/AEM.01177-06).
 
 ## Getting DNA from a sample
 
@@ -99,11 +93,7 @@ if they used the same extraction methodology, since differences in the 16S
 data could be due to differences in the microbes themselves or just in the methods
 used to extract the DNA.
 
-[^extract]: A quick web search gave me: [Salter *et al.*](http://dx.doi.org/10.1186/s12915-014-0087-z)
-(doi:10.1186/s12915-014-0087-z), [Walker *et al.*](http://dx.doi.org/10.1371/journal.pone.0088982)
-(doi:10.1371/journal.pone.0088982), [Rochelle *et al.*](http://dx.doi.org/10.1016/0378-1097(92)90188-T)
-(doi:10.1016/0378-1097(92)90188-T), etc. But compare [Rubin *et al.*](http://dx.doi.org/10.1002/mbo3.216)
-(doi:10.1002/mbo3.216).
+[^extract]: A quick web search gave me: [Salter *et al.*](http://dx.doi.org/10.1186/s12915-014-0087-z) (doi:10.1186/s12915-014-0087-z), [Walker *et al.*](http://dx.doi.org/10.1371/journal.pone.0088982) (doi:10.1371/journal.pone.0088982), [Rochelle *et al.*](http://dx.doi.org/10.1016/0378-1097(92)90188-T) (doi:10.1016/0378-1097(92)90188-T), etc. But compare [Rubin *et al.*](http://dx.doi.org/10.1002/mbo3.216) (doi:10.1002/mbo3.216).
 
 ### PCR bias
 
@@ -117,7 +107,7 @@ the primer.[^2]
 
 Second, it's known that PCR has different efficiencies for different types of sequences, meaning that some 16S variable regions will amplify better than others. Third, statistical fluctuations can occur, especially in low-diversity samples. This means that a sequence that, by chance, gets lots of amplification in early PCR cycles could dominate the sample in late PCR cycles.
 
-[^2]: It may be that there are a lot of interesting bugs whose 16S sequences are so divergent that they don't match the typical primers (cf. [Brown *et al.*](http://dx.doi.org/10.1038/nature14486)).
+[^2]: It may be that there are a lot of interesting bugs whose 16S sequences are so divergent that they don't match the typical primers (cf. [Brown *et al.*](http://dx.doi.org/10.1038/nature14486); doi:10.1038/nature14486).
 
 In general, PCR bias is not as bad when there is more DNA and (relatedly) when the PCR is run for fewer cycles.
 
@@ -154,8 +144,7 @@ especially in those dark ages of sequencing, weird stuff would frequently happen
 during sequencing runs, and it was hard to distinguish a bad lane from a weird
 sample.
 
-[^multi]: Cf., e.g., [Binladen *et al.*](http://dx.doi.org/10.1371/journal.pone.0000197)
-(doi:10.1371/journal.pone.0000197).
+[^multi]: Cf., e.g., [Binladen *et al.*](http://dx.doi.org/10.1371/journal.pone.0000197) (doi:10.1371/journal.pone.0000197).
 
 In contrast, multiplexing adds a barcode or "tag" to the 16S amplicon. Each barcode corresponds to a sample, and all amplicons in that sample get that barcode. It's now common to multiplex 96 (or 384) samples and sequence them in one lane. Aside from making the sequencing 100-fold cheaper, multiplexing means that it's easier to include some controls in each lane:
 
