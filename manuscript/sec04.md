@@ -148,14 +148,14 @@ cheap (in terms of memory) and embarrassingly parallelizable[^embarr].
 some database, which has hopefully been pre-screened for chimeras, then you
 don't need to worry about them yourself.
 
-[^embarr] I didn't make that up; it's a real computer science term.
+[^embarr]: I didn't make that up; it's a real computer science term.
 
 The major weakness of reference-based methods can be dastardly and insidious: if a sequence in your dataset doesn't match a sequence in the database, what do you do? Frighteningly, many methods just throw it out without telling you. If you work in the human gut microbiome, this might not bother you, since the gut is the best-studied ecosystem and databases like Greengenes have heaps of gut data baked into them. If you work in environmental microbiology or even in mice, however, many of your sequences might not hit Greengenes.
 
 Reference-based methods also suffer a converse problem: what if your sequence is
 an equally good match to more than one database entry? This can happen in
 amplicon sequencing: the Greengenes OTUs are the entire 16S gene, but you only
-have a little chunk of it. The Greengenes OTUs are (say) 97% similar (i.e., 3%
+have a little chunk of it. The Greengenes OTUs are, say, 97% similar (i.e., 3%
 dissimilar) across the *entire gene*, but they might be identical over the
 stretch that aligns to your little chunk.
 [USEARCH](http://www.drive5.com/usearch/), a popular algorithm[^usearch] for matching
@@ -226,6 +226,4 @@ should be kept in separate OTUs. This approach is confusingly called
 calling. It's not very popular beyond the Alm Lab, but it's a good way to call
 OTUs.
 
-![Distribution-based OTU calling separates sequence-similar reads if they are distributed differently across samples.[^dbcim]](images/dbc.png)
-
-[^dbcim]: I adapted this figure from the paper mentioned above.
+![Distribution-based OTU calling separates sequence-similar reads if they are distributed differently across samples. Adapted from Preheim *et al.*](images/dbc.png)

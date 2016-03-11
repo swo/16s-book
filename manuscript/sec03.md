@@ -60,7 +60,7 @@ meaning that we get less sure that the sequence is correct the further away from
 the primer we go. Some reads also have overall low quality.[^4] Quality
 filtering removes sequences or parts of sequences that we think we cannot trust.
 
-![Reads differ in overall quality and number of "decent" reads.](images/quality-dec.png)
+![Reads differ in overall quality and number of "decent" reads.](images/qual-dec.png)
 
 [^4]: Annoyingly, it's my experience that the first reads in the raw data are substantially worse than most of the reads in the file. In the dataset I'm looking at, the first 3,000 or so reads (of 13.5 million total) have an average quality that is about half of what's typical for that dataset.
 
@@ -72,7 +72,7 @@ reads that produced it. There's no such thing as "merging" for single-end
 sequencing.
 - *Demultiplexing* (or "splitting"). The man-made barcode sequences are replaced by the names of the samples the sequences came from.
 
-![Merging aligns reads, makes a new sequence, and computes new quality scores.[^merge]](images/merge-quality.png)
+![Merging aligns reads, makes a new sequence, and computes new quality scores. Adapted from the `usearch` manual.](images/merge-quality.png)
 
 ### Phase II
 
@@ -80,8 +80,6 @@ These steps compact the data and make it easier to work with when calling OTUs. 
 
 - *Dereplicating*. There are fewer *sequences* (strings of `ACGT`) than there are *reads*. This step identifies the set of unique sequences, which is usually much smaller than the number of reads.
 - *Provenancing* (or "mapping" or "indexing"). How many reads of each sequence were in each sample? (Only I call it "provenancing"[^3]. I find all the other names I've heard confusing.)
-
-[^merge]: I adapted this figure from the `usearch` manual's [website](http://drive5.com/usearch/manual/merge_pair.html).
 
 [^3]: In archaeology, an artifact's _provenance_ is the place within the archaeological site where it was found.
 

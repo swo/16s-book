@@ -73,9 +73,9 @@ are:
 	
 [^ascii]: Technically, these different encodings are named by their ASCII "offsets". ASCII is a system that associates individual characters with integers. The system I show here has an ASCII offset of 33: the character `I` has an ASCII value of 73, and the offset means you subtract 33 from 73 to get 40. The other common offset is 64: in that case, the character `I` encodes a quality 9. Illumina used a 64 character offset for a while, but newer machines use a 33 character offset. You can tell the difference getting familiar with the characters used and just looking by eye, by running your pipeline and seeing if it breaks, or using a tool like `usearch -fastq_chars` to figure out what the offset is.
 
-[^phred]: This conversion between quality {$$}Q{/$$} (the integer) and the probability {$$}p{/$$} of incorrect calling is the "Phred" or "Sanger" system: {$$}Q = -10 \log_10 p{/$$}, or equivalently, {$$}p = 10^{-Q/10}{/$$}. There is at least one other way of converting between {$$}Q{/$$} and {$$}p{/$$}, which is called the "Solexa" system.
+[^phred]: This conversion between quality {$$}Q{/$$} (the integer) and the probability {$$}p{/$$} of incorrect calling is the "Phred" or "Sanger" system: {$$}Q = -10 \log_{10} p{/$$}, or equivalently, {$$}p = 10^{-Q/10}{/$$}. There is at least one other way of converting between {$$}Q{/$$} and {$$}p{/$$}, which is called the "Solexa" system.
 
-[^excl]: Even more confusingly, in some versions of Illumina, the very low ASCII scores were used to mean special things. In the older, 64-offset Illumina encoding, quality 3 (`C`) was the lowest possible, and the quality 2 character (`B`) was instead used to show that the Illumina software had done its own internal quality trimming and had decided that, starting with the first `B`, that the rest of the sequence was "bad". To my relief, this weird system is not used in the newer Illumina (version 1.8+). I personally think the sequencer should give you *just* raw data, not some combination or raw data and partially-processed data.
+[^excl]: Even more confusingly, in some versions of Illumina, the very low ASCII scores were used to mean special things. In the older, 64-offset Illumina encoding, quality 3 (`C`) was the lowest possible, and the quality 2 character (`B`) was instead used to show that the Illumina software had done its own internal quality trimming and had decided that, starting with the first `B`, that the rest of the sequence was "bad". To my relief, this weird system is not used in the newer Illumina (versions 1.8 and above). I personally think the sequencer should give you *just* raw data, not some combination or raw data and partially-processed data.
 
 Here's an example fastq entry. The sequence and quality lines are too
 long to fit on the page, so I cut out some letters in the middle and put
@@ -99,7 +99,7 @@ correspond to a single sequence. Each entry has this format:
     new entry. The stuff after `>` is usually some kind of ID that names
     this sequence. There might be other information there too.
 
-2.  A number of *sequence* lines. The linebreaks are not meaningful: the
+2.  One or more *sequence* lines. The linebreaks are not meaningful: the
     sequence for this entry just keeps on going until you hit another
     `>`. The early recommendation was to wrap all lines at 80 characters
     to make them easy to read on old-school terminals. Many people and
