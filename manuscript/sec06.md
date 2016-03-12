@@ -18,4 +18,7 @@ documentation.
 Maybe you read this hoping to get a step-by-step about how to
 actually process data. The QIIME and mothur website both have
 a lot of documentation about how to use their tools. They are good
-places to go for step-by-step instructions.
+places to go for step-by-step instructions. There are also some
+broader lessons about how 16S processing works in general; I
+did a lot of my early learning about 16S data from reading the
+QIIME documentation.

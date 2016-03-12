@@ -1,13 +1,21 @@
 # Where 16S data comes from
 
-By "16S data" I mean amplicon sequencing of some section of the bacterial 16S gene. A lot of what I discuss in this document may also apply to other types of taxonomic marker sequences like the eukaryotic 18S or the fungal ITS.
+By "16S data" I mean amplicon sequencing of some section of the bacterial 16S
+gene. A lot of what I discuss in this document may also apply to other types of
+taxonomic marker sequences like the eukaryotic 18S or the fungal ITS.
 
 ## The 16S gene
 
-All bacteria (and archaea)[^chloro] have at least one copy of the 16S gene in their genome.[^kembel] The gene has some sections that are *conserved*, meaning that they are very similar across all bacteria, and some sections that are *variable*. The idea behind 16S sequencing is that the variable regions are not under strong evolutionary pressure, so random mutations accumulate there. Closely-related bacteria will have more similar variable regions than distantly-related bacteria.
+All bacteria (and archaea)[^chloro] have at least one copy of the 16S gene in
+their genome.[^kembel] The gene has some sections that are *conserved*, meaning
+that they are very similar across all bacteria, and some sections that are
+*variable* (or "hypervariable"). The idea behind 16S sequencing is that the variable regions are not
+under strong evolutionary pressure, so random mutations accumulate there.
+Closely-related bacteria will have more similar variable regions than
+distantly-related bacteria.
 
 To get a feel for the variability at different positions in the gene, I looked
-at the aligned 94% OTUs in [Greengenes](http://dx.doi.org/10.1128/AEM.03006-05).
+at the aligned 94% OTUs in [Greengenes](dx.doi.org/10.1128/AEM.03006-05).
 "Variability" (which I made up for the purposes of this figure) at a position in the gene is
 one minus the fraction of OTUs that had the most common nucleotide at that
 position. For example, if all OTUs had `A` at a position, the "variability" is
@@ -18,7 +26,7 @@ variable than others.
 
 ![The 16S gene has variable regions.](images/variab.png)
 
-[^chloro]: Chloroplasts, found in algae and other eukaryotes, have a ribosomal gene that is very similar to 16S that often ends up in 16S data sets.
+[^chloro]: Chloroplasts, found in algae and other eukaryotes, have a ribosomal gene that is very similar to 16S and often ends up getting amplified in 16S data sets.
 
 [^kembel]: It's not unusual for bacteria to have multiple copies of the 16S gene, and those copies might not be identical to one another. Some people are concerned by the effect this could have on interpretations of 16S data (e.g., [Kembel *et al*.](http://dx.doi.org/10.1371/journal.pcbi.1002743); doi:10.1371/journal.pcbi.1002743 and [Case *et al.*](http://dx.doi.org/10.1128/AEM.01177-06); doi:10.1128/AEM.01177-06).
 
@@ -28,7 +36,15 @@ After a sample is taken, the cells in the sample are lysed, typically using some
 
 ## Amplifying the gene
 
-In the amplicon sequencing approach, PCR is used to amplify a section of the 16S gene. The size of the sequenced section is limited by the length of reads produced by high-throughput sequencing. The sections of the 16S gene that are amplified are named according to what variable regions of the gene are covered. There are nine variable regions, but there isn't an exact definition of where they begin and end.
+In the amplicon sequencing approach, PCR is used to amplify a section of the
+16S gene. The size of the sequenced section is limited by the length of reads
+produced by high-throughput sequencing. The sections of the 16S gene that are
+amplified are named according to what variable regions of the gene are covered.
+There are nine variable regions, but there isn't an exact definition of where
+they begin and end. Different regions can provide different taxonomically
+resolution for different parts of the microbial tree of life.
+
+Some regions I've seen amplified include:
 
 - *V1-V2* (the first two variable regions). This section of the gene provides better taxonomic resolution for some bacteria associated with the skin microbiome, so skin studies sometimes sequence V1-V2.
 - *V4* (variable region 4). This section of the gene provides good taxonomic resolution for bacteria associated with the gut microbiome, so it is the most popular section. I get the sense that V4 is also the best "catch-all" region, but I don't know of a good reference to back up that sense.
@@ -41,9 +57,9 @@ PCR reactions on these regions have primers that match the constant regions arou
 First, a note on terminology.
 Technically, "metagenomic" means "related to more than one genome", that is,
 sampling from an entire community rather than from a single cell or a single
-colony sequencing. In common speech, I hear "metagenomics" used as a synonym
-for _shotgun_ metagenomics (i.e., trying to sequence all the DNA in a sample)
-and as an antonym for amplicon sequencing (even though amplicon sequencing,
+colony. In common speech, I hear "metagenomics" used to mean
+_shotgun_ metagenomics (i.e., trying to sequence all the DNA in a sample),
+as opposed to amplicon sequencing (even though amplicon sequencing,
 as we're talking about, is metagenomic, since it usually involves many different
 species).
 
@@ -56,7 +72,7 @@ In practice, the amplicon-based approach has some advantages.
 Because only bacteria and archaea have the 16S gene, a tube of 16S amplicon DNA
 mostly carries information about microbes. In contrast, the majority of shotgun reads from,
 say, a swab of human
-skin will be reads of human DNA. This means that, for the same depth of sequencing,
+skin will be human DNA. This means that, for the same depth of sequencing,
 16S amplicon sequencing will provide much more information about the bacterial
 community structure than will shotgun sequencing. Shotgun sequencing projects
 tend to be more expensive, since they need to sequence deeper to get the
@@ -76,10 +92,10 @@ you will find in this document.
 
 The process of extracting DNA from bacterial cells and then amplifying a 16S
 region introduces certain biases into the resulting sequence data. These effects
-mean its better to look for changes in bacterial community structure rather than
+mean that it's better to look for changes in bacterial community structure rather than
 assert that such-and-such a species is more abundant than other-and-such a
 species. It also means that large effects, like variations over orders of
-magnitude, are to be trusted far more than smaller changes. These grains of salt
+magnitude, are to be trusted far more than smaller changes. The grains of salt
 to be kept in mind are *extraction bias*, *PCR bias*, PCR *chimeras*, and
 laboratory effects.
 
@@ -98,24 +114,39 @@ used to extract the DNA.
 ### PCR bias
 
 I don't think *PCR bias* is a
-huge problem, but it's good to have heard about it. First, even though the PCR
-primers bind a "constant" region, some bacteria in the sample will have
-different nucleotides there, meaning that the PCR primers will bind with
+huge problem, but it's good to have heard about it. First, although we say the PCR
+primers bind a "constant" region, there is still variation in those regions.
+Thus, some bacteria in the sample will have
+different nucleotides at the primer binding site, meaning that the PCR primers will bind with
 different affinities to the DNA of different bacteria. This effect decreases
-the number of reads from bacteria whose constant regions don't perfectly match
+the number of reads from bacteria whose constant regions don't match
 the primer.[^2]
 
-Second, it's known that PCR has different efficiencies for different types of sequences, meaning that some 16S variable regions will amplify better than others. Third, statistical fluctuations can occur, especially in low-diversity samples. This means that a sequence that, by chance, gets lots of amplification in early PCR cycles could dominate the sample in late PCR cycles.
+"PCR bias" encompasses other things beyond primer site binding bias.
+It's known that PCR has different efficiencies for different types of
+sequences, meaning that some 16S variable regions will amplify better than
+others. Also, statistical fluctuations can occur, especially in low-diversity
+samples. This means that a sequence that, by chance, gets lots of amplification
+in early PCR cycles could dominate the sample in late PCR cycles.
 
 [^2]: It may be that there are a lot of interesting bugs whose 16S sequences are so divergent that they don't match the typical primers (cf. [Brown *et al.*](http://dx.doi.org/10.1038/nature14486); doi:10.1038/nature14486).
 
 In general, PCR bias is not as bad when there is more DNA and (relatedly) when the PCR is run for fewer cycles.
 
-In the lab we've run experiments to quantify PCR bias: we synthesize some DNA that looks like bacterial 16S genes, mix them in known proportions, do the amplification and sequencing, and compare the sequencing data to the known proportions. The errors are somewhere in the neighborhood of 1% to 10%. Not enough to make you think that 16S data is all garbage, but high enough to make you doubt small changes in composition.
+In our lab, some folks have run experiments to quantify PCR bias: they synthesize
+some DNA that looks like bacterial 16S genes, mix that DNA in known proportions,
+amplify the mixture, sequence the amplified DNA, and compare the sequencing data to the known
+proportions of input DNA. The errors are somewhere in the neighborhood of 1% to 10%. 
+It's not high enough to make me think that 16S data is all garbage, but it is
+high enough to make me doubt small (say, two-fold) changes in composition.
 
 ### Chimeras
 
-PCR also creates a weird artifact called *chimeras*. When using PCR to amplify two DNA sequences *a* and *b*, you'll get a lot of *a*, a lot of *b*, and some sequences that have an *a* head and *b* tail (or vice versa). There are some things about your PCR protocol that you can adjust to decrease the prevalence of chimeras, but they are beyond the scope of this document.
+PCR also creates weird artifacts called *chimeras*. When using PCR to amplify
+two DNA sequences *a* and *b*, you'll get a lot of *a*, a lot of *b*, and some
+sequences that have an *a* head and *b* tail (or vice versa). There are some
+things about your PCR protocol that you can adjust to decrease the prevalence
+of chimeras.
 
 ### Lab-specific effects
 
@@ -127,7 +158,8 @@ of collection and storage is used, using the same method for every sample in a
 study is a good way to reduce biases.
 
 I suspect that a stronger signal comes from reagent or lab-specific contamination.
-Commercial reagents often come pre-loaded with bacteria. In our lab, we notice
+Commercial reagents often come pre-loaded with bacteria. (Like, not in a good way.)
+In our lab, we notice
 that _Halomonas_ and _Shewanella_ species often appear where they shouldn't, and
 the effect appears to depend on the particular extraction kit we use.
 Interestingly, although the HMP project tried very hard to standardize protocols
@@ -136,7 +168,7 @@ signal in the data that causes samples to cluster by sequencing center.
 
 ## Multiplexing helps evaluate contamination (or other weirdness)
 
-Next-generation sequencing wasn't that helpful to microbial ecology until
+Next-generation sequencing became more helpful to microbial ecology when
 *sample multiplexing* (or "barcoding") was worked out in the early
 2000s.[^multi] Before multiplexing, every sample had to be run on its own
 sequencing lane. This was expensive and bioinformatically annoying, since,
@@ -146,7 +178,11 @@ sample.
 
 [^multi]: Cf., e.g., [Binladen *et al.*](http://dx.doi.org/10.1371/journal.pone.0000197) (doi:10.1371/journal.pone.0000197).
 
-In contrast, multiplexing adds a barcode or "tag" to the 16S amplicon. Each barcode corresponds to a sample, and all amplicons in that sample get that barcode. It's now common to multiplex 96 (or 384) samples and sequence them in one lane. Aside from making the sequencing 100-fold cheaper, multiplexing means that it's easier to include some controls in each lane:
+Multiplexing, by contrast, adds a barcode or "tag" to the 16S amplicon. Each
+barcode corresponds to a sample, and all amplicons in that sample get that
+barcode. It's now common to multiplex 96 (or 384) samples and sequence them in
+one lane. Aside from making the sequencing 100-fold cheaper, multiplexing means
+that it's easier to include some controls in each lane:
 
 - *Negative controls*: Usually just vehicle with no DNA, as a way to check for contamination from reagents or poor sample preparation.
 - *Positive controls*: Mock communities of known composition, which can be used to check that the sequencing was not "weird". If you have a lot of samples from the same project and you need to run them in more than one lane, you can use the positive controls as an internal check that sequencing proceeded similarly across lanes.
@@ -158,11 +194,22 @@ in the analysis stage. This is easy.
 
 A little more work has to be done before putting the sample in the sequencer.
 These steps will depend on the sequencing platform. Here I'll talk about
-Illumina because it's popular and I have experience with it. If you're using
+Illumina because it's popular[^roche] and I have experience with it. If you're using
 a different sequencing platform, then you'll need to learn about the quirks
 of that platform elsewhere.
 
-Samples to be sequenced on an Illumina machine need to have Illumina-specific *adapters* added in another PCR. These adapters allow the DNA amplicons to bind the flowcell where they are sequenced. It is sometimes also desirable to have a *diversity region* added between the adapter and the 16S primer. The Illumina sequencers expect to see a diversity of nucleotides at every read position. In amplicon sequencing, almost all the reads are the same through the primer region, which freaks out the sequencer. A diversity region is just some random nucleotides that helps the sequencer do its job. In our lab we use `YRYR`, where `Y` means `T` or `C` and `R` means `G` or `A`.
+[^roche]: Interestingly, it wasn't that long ago that 454 (or "Roche") sequencing led the next-generation field. Plenty of papers use "pyrosequencing" (the technical word for 454's sequencing methodology) as a synonym for "next-generation sequencing".
+
+Samples to be sequenced on an Illumina machine need to have Illumina-specific
+*adapters* added in a third PCR (one for amplification, one to add the barcodes,
+and one to add the adapters). These adapters allow the DNA amplicons to bind
+the flowcell, where they are sequenced. It is sometimes also desirable to have a
+*diversity region* added between the adapter and the 16S primer. The Illumina
+sequencers expect to see a diversity of nucleotides at every read position. In
+amplicon sequencing, almost all the reads are the same through the primer
+region, which freaks out the sequencer. A diversity region is just some random
+nucleotides that helps the sequencer do its job. In our lab we use `YRYR`,
+where `Y` means `T` or `C` and `R` means `G` or `A`.
 
 All of these pieces ---the 16S region you're interested in, forward and reverse
 primers, barcodes, diversity region, and Illumina adapters--- are all made into
