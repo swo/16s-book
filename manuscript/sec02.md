@@ -97,7 +97,7 @@ assert that such-and-such a species is more abundant than other-and-such a
 species. It also means that large effects, like variations over orders of
 magnitude, are to be trusted far more than smaller changes. The grains of salt
 to be kept in mind are *extraction bias*, *PCR bias*, PCR *chimeras*, and
-laboratory effects.
+lab-specific effects.
 
 ### Extraction bias
 

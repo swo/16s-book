@@ -164,7 +164,7 @@ quality. It will give you a sense of whether your sequencing run as a whole was
 good, and it will give you a sense of whether you got the sort of good-quality
 length you were hoping for.
 
-![An read quality report delivered by the Illumina software.](images/quality.png)
+![A read quality report delivered by the Illumina software.](images/quality.png)
 
 The big quality report gives you a sense of whether you should do the whole
 sequencing run over again. Even in a good sequencing run there are bad sequences
