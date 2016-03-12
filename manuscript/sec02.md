@@ -162,9 +162,6 @@ Commercial reagents often come pre-loaded with bacteria. (Like, not in a good wa
 In our lab, we notice
 that _Halomonas_ and _Shewanella_ species often appear where they shouldn't, and
 the effect appears to depend on the particular extraction kit we use.
-Interestingly, although the HMP project tried very hard to standardize protocols
-across the four sequencing centers that processed the samples, there is still a
-signal in the data that causes samples to cluster by sequencing center.
 
 ## Multiplexing helps evaluate contamination (or other weirdness)
 
