@@ -4,39 +4,65 @@ Hooray, you have sequence data! Now what? I'll assume you did paired-end sequenc
 
 ## Raw data and metadata
 
-Before trying to process your dataset, be sure you have the following raw data[^3] and metadata:
+Before trying to process your dataset, be sure you have the appropriate raw data[^3] and metadata.
+In all cases, this means you'll need one set of reads.
+For Illumina, this means a *fastq* file that might have a name like:
+~~~~~~~~
+`130423Alm_D13-1939_1_sequence.fastq`.
+~~~~~~~~
+This filename is typical for raw sequencing data: it has information about the date, the
+group that requested the sequencing, then something about the specifics of the sequencing
+run. The `_1_` indicates that these were forward reads. (Forward read files might have `_R1_`
+in place of `_1_` in the filename.)
 
 [^3]: In what follows, I'll talk about "raw data", by which I mean data that you would get from the sequencing center. There is actually a more raw kind of data that comes right out of the sequencing machine that gets processed right away. On the Illumina platform, this data is CASAVA. Different version of CASAVA produce slightly different output, and every sequencer might have a different version of CASAVA, so be prepared for slight variations in the format of your raw data.
 
-- *Forward reads*. For Illumina, this means a *fastq* file that might have a name like:
-~~~~~~~~
-`130423Alm_D13-1939_1_sequence.fastq`
-~~~~~~~~
-Giveaways that this is a forward read include the presence of like `_1_` or `_R1_` in the
-filename. The first line of the file should also end with `/1`. For example, the
-first line of the file I have is:
-~~~~~~~~
-`@MISEQ578:1:1101:15129:1752#CCGACA/1`.
-~~~~~~~~
-- *Reverse reads* (unless you did single-end sequencing). This is a fastq file with a
-name like the forward reads except with `_2_` or `_R2_` in it. The first line in
-the file should end with `/2`, indicating that it's the second read of a pair.
+If you did paired-end sequencing, you will also need the *reverse reads*.
+This is a fastq file with a
+name like the forward reads except with `_2_` or `_R2_` in it.
 Every entry in the reverse reads should match an entry in the forward reads. In
 most cases, the two pairs of a read appear in analogous places in the two files
 (i.e., the forward read entry starting on line *x* in the forward read file
 corresponds to the reverse read starting on line *x* in the reverse reads file).
-- *Barcode* or *index reads*. Depending on your Illumina version, this
-  information might be in different places. In some datasets, it's in the file
-  with the forward reads. In the above example line, the barcode read is
-  `CCGACA` (between the `#` and the `/1`). In other datasets, you might find
-  the index reads in a file with a name that has `_R3_`, `_I_`, or `_I1_` in
-  it.
-- *Barcode map*. This is the information about what barcode goes with what sample. A common
-  gotcha in 16S data processing is that the barcode map might have barcodes
-  that are reverse complements of what are in the samples.
-- *Primer sequences*. These are the sequences of the primers used in the 16S
-  amplification. They might also be the reverse complement of what's in the
-  data.
+
+In some cases, the data might be delivered to you having already been split
+into samples (or *demultiplexed*). This means your (forward, or reverse) reads
+are not in one big file, they are in multiple files, each named (or in a subfolder
+that is named) that indicates that those are reads belonging to a certain sample.
+If you data are not demultiplexed (i.e., you only have one big file of forward
+reads), then you will also need the *barcode* or *index reads*. Depending on your Illumina version, this
+information might be in different places. In some datasets, it's in the file
+with the forward reads. For example, the file I mentioned above, the first line
+is
+~~~~~~~~
+`@MISEQ578:1:1101:15129:1752#CCGACA/1`.
+~~~~~~~~
+The barcode read is
+`CCGACA` (between the `#` and the `/1`). In other datasets, you might find
+the index reads in a file with a name that has `_R3_`, `_I_`, or `_I1_` in
+it.
+
+If you have barcodes, you will also need a *barcode map*.
+This is the information about what barcode goes with what sample. A common
+gotcha in 16S data processing is that the barcode map might have barcodes
+that are reverse complements of what are in the samples.
+
+Finally, you might also need the *primer sequences*. These are the sequences of
+the primers used in the 16S amplification. In some cases, these have already
+been removed when you get your data. In other cases, you will have to remove
+them yourself. Two of the most common gotchas I experience in 16S data
+processing have to do with primers: (i) you think the primers have been
+pre-removed but they are actually still present and (ii) you think you have the
+sequences of the primers but you actually have the reverse complements of those
+primers.
+
+In summary, you might need as much as:
+
+- Forward reads
+- Reverse reads
+- Barcode reads
+- Barcode map
+- Primer sequences
 
 In general, it's very useful to ask for or search for
 this entire list of things when you're starting to analyze a data set from
@@ -44,8 +70,9 @@ scratch.
 If you download a dataset or get it from a collaborator, it might come in an
 already-processed format. Depending on your purposes, it might be fine to use
 that data, which will look similar to something we'll get a little further down
-this pipeline. For example, your sequencing center might give you data
-that has already been demultiplexed.
+this pipeline. It's useful to know exactly what the content of the data is before
+you start working on it. If it lacks any of these parts, make sure to find
+them before you try to get to work!
 
 ## Overview of the processing pipeline
 
@@ -65,7 +92,7 @@ that sort of thing.
 These steps take the raw data and turn it into biologically relevant stuff.
 There is some freedom about the order in which they can be done.
 
-- *Removing* (or "trimming") *primers*. The primers are a man-made thing. If there was a mismatch between the primer and the DNA of interest, you'll only see the primer. We therefore chop it off.
+- *Removing* (or "trimming") *primers*. The primers are a man-made thing. If there was a mismatch between the primer and the DNA of interest, you'll only see the primer. In this sense, the primer sequence masks the true biological content of the DNA of interest. Removing the primers is conservative in the sense that you won't come to any false conclusions about the content of the DNA of interest, but the cost is that, for the most part, the primer sequences matched the biological DNA pretty well. Regardless of the tradeoff, common practice is to cut off the primers.
 - *Quality filter* (or "trim") reads. For every nucleotide in every read, the
 sequencer gives some indication of its assuredness that that base is in fact
 the base the sequencer reported. This assuredness is called *quality*: if a base has high quality,
@@ -92,16 +119,16 @@ sequencing.
 These steps compact the data and make it easier to work with when calling OTUs. They can happen simultaneously.
 
 - *Dereplicating*. There are fewer *sequences* (strings of `ACGT`) than there are *reads*. This step identifies the set of unique sequences, which is usually much smaller than the number of reads.
-- *Provenancing* (or "mapping" or "indexing"). How many reads of each sequence were in each sample? (Only I call it "provenancing"[^3]. I find all the other names I've heard confusing.)
+- *Proveniencing* (or "mapping" or "indexing"). How many reads of each sequence were in each sample? (Only I call it "proveniencing"[^3]. I find all the other names I've heard confusing.)
 
-[^3]: In archaeology, an artifact's _provenance_ is the place within the archaeological site where it was found.
+[^3]: In archaeology, an artifact's _provenience_ is the place within the archaeological site where it was found.
 
 ### Phase III: OTU calling
 
 This is a complex enough endeavor that I will break it out into a separate section.
 Roughly, OTU calling (or "picking") assigns every dereplicated sequence to a group (called an OTU).
 You can combine the sequence-to-OTU information from OTU calling with the
-sequence-to-sample-counts information from provenancing to make an OTU table that
+sequence-to-sample-counts information from proveniencing to make an OTU table that
 shows how reads mapping to each OTU appear in each sample.
 
 ### Phase IV: Fun & profit.
@@ -205,9 +232,9 @@ the barcodes you're looking for). If the known barcode that matches best has
 more than one mismatch with the barcode read, call that read "bad" and discard
 it.
 
-### Dereplicating, denoising, and provenancing
+### Dereplicating, denoising, and proveniencing
 
-Provenancing is simple: you just look through the list of unique sequences
+Proveniencing is simple: you just look through the list of unique sequences
 (i.e., the dereplicated reads) and the list of all reads, counting up how many
 times each sequence appears in each sample. Dereplication has one practical
 question associated with it:
