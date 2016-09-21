@@ -183,15 +183,13 @@ amplicon sequencing: the Greengenes OTUs are the entire 16S gene (about 1400 bas
 have a little chunk of it (say, 250 bases). The Greengenes OTUs are, say, 97% similar (i.e., 3%
 dissimilar) across the *entire gene*, but they might be identical over the
 stretch that aligns to your little chunk.
+
 [USEARCH](http://www.drive5.com/usearch/), a popular algorithm[^usearch] for matching
-sequences to a database (and one of QIIME's tool for reference-based OTU calling),
-assigns reads heuristically (crudely speaking, this can mean "randomly"). Two
-very similar sequences in your dataset might get assigned to Greengenes OTUs
-that have different taxonomies.[^plug]
+sequences to a database (and one of QIIME's tool for reference-based OTU calling).
+Because USEARCH is so popular and because it can have unexpected effects, I will
+devote some space in the next chapter to discussing its workings.
 
 [^usearch]: Confusingly, USEARCH is the name of an alignment algorithm and `usearch` is the name of the program that does USEARCH, UPARSE, and other stuff.
-
-[^plug]: This particular quirk confused me for a long time. When working on a mouse microbiome project, I found that many sequences in my dataset were very similar (say, one nucleotide different in a 250 nucleotide amplicon) but ended up in different 97% OTUs. I know some other people have discovered this quirk when they called OTUs *de novo* and using reference-based calling. They expected that since their *de novo* and reference-based OTUs were both 97%, they should be about the same "size", except that reference-based OTU calling would miss some of the OTUs that *de novo* calling would catch. In fact, this approach usually leads to *more* OTUs in the reference-based calling. I wrote a [blog post](http://microbiome.mit.edu/2016/02/07/usearch/) unpacking this phenomenon.
 
 ### Open-reference calling
 

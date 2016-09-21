@@ -155,27 +155,84 @@ The great and mighty [`usearch`](http://www.drive5.com/usearch)
 underlies a lot of 16S data processing.
 A lot of QIIME is built on the back of `usearch`. `usearch` is a single program
 that has an ever-growing number of functionalities (including, the
-algorithms USEACRH, UCLUST, and UPARSE). The nice thing about `usearch` is that
+algorithms USEARCH, UCLUST, and UPARSE).
+
+Because USEARCH is so widely used, I will take a moment to dive a little more
+deeply into its workings. I have seen a lot of confusion arise because of
+USEARCH, mostly because users (like me!) expected USEARCH to do one thing when,
+in fact, it does something else. The caveats I'm going to lay out apply if
+you're using USEARCH via `usearch`, QIIME, or another pipeline.
+
+Critically, USEARCH is a *heuristic* algorithm. This means that it applies some
+shortcuts to achieve faster speed (i.e., orders of magnitude faster than simple
+BLAST). In the [paper](http://dx.doi.org/10.1093/bioinformatics/btq461), Mr. Edgar
+explains that USEARCH gets its speed-up from three places.
+
+1. Search for a match according to a decreasing expected sequence similarity.
+2. Use heuristics to speed up the sequence alignments.
+3. Apply stopping criteria. The default is to stop after a single hit that meets the accepting criteria.
+
+The first rule means that your query sequence will be compared to database
+sequences according to some order; the third rule means that the first of these
+database sequences that is a sufficiently good match to your query will be
+delivered as the result. For example, if you are assigning your OTUs by making
+a search to the 97% OTUs in Greengenes, then the first database sequence that
+is at least 97% similar to your query will be considered its parent OTU.
+
+This would be of no concern if the comparisons were performed in the order of
+decreasing sequence similarity. Then the first hit would be the best one.
+This, however, puts the cart before the horse: you need to somehow *guess*
+which sequence will be the best match before actually performing the alignment.
+
+USEARCH guesses the sequence similarity between two sequences using the *U*
+value (which is the U in USEARCH). *U* is the number of unique *words* shared
+by two sequences. You get these words by looking for length *w* (default is 8)
+subsequences starting at positions spaced {$$}\mu{/$$} apart. For example, if
+{$$}\mu = 1{/$$}, then your words are all the *w*-mers in the sequence. If
+{$$}\mu = w{/$$}, then your words are the first *w* nucleotides, the next *w*
+nucleotides, and so forth. Conveniently, sensible values for {$$}\mu{/$$}
+are inferred using tables of optimal choices derived from running USEARCH
+on databases of sequences using different values of the identity threshold.
+
+This heuristic selection of database entries for comparison can lead to some
+quirky results. When working on a mouse microbiome project, I found that many
+sequences in my dataset were very similar (say, one nucleotide different in a
+250 nucleotide amplicon) but ended up in different 97% OTUs. I've heard stories
+of people who discovered this quirk when they called OTUs *de novo* and using
+reference-based calling. They expected that since their *de novo* and
+reference-based OTUs were both 97%, they should be about the same "size",
+except that reference-based OTU calling would miss some of the OTUs that *de
+novo* calling would catch. In fact, this approach usually leads to *more* OTUs
+in the reference-based calling. I wrote a [blog
+post](http://microbiome.mit.edu/2016/02/07/usearch/) unpacking this phenomenon.
+
+In light of these weird effects, I caution you to carefully read the `usearch`
+documentation to get a rough sense of what it's doing. I got weird results for
+some years before I started to dig into what `usearch` was actually doing.
+Don't expect it to do something that it doesn't do!
+
+Overall, the nice thing about `usearch` is that
 it's built by someone who's very concerned about making a fast, optimized
 tool. The potentially nice thing about `usearch` is that it's pretty
 low-level: if you want to do some medium-lifting (like primer removal
 and demultiplexing) but not heavy-lifting (like merging, quality
 filtering, clustering, or sequence alignment), then `usearch` is for
-you. The potentially bad thing about `usearch` is that it's made by a
-single person and is closed source.[^caution]
+you.
 
-[^caution]: I caution you to carefully read the `usearch` documentation to get a rough sense of what it's doing. I got weird results for some years before I started to dig into what `usearch` was actually doing. In short, a lot of `usearch`'s capabilities are heuristic, which can be confusing if you interpret them as if they were deterministic. For example, when I used `usearch -fastq_mergepairs` to merge amplicons, I sometimes got weird results, different from what I got if I just merged sequences in a slower, dumber way. This either means I'm confused or that `usearch` does some kind of heuristic alignment when merging. Also cf. the footnote about `usearch` in the last chapter. 
-
-`usearch` also has a funny caveat: newer versions come in two flavors,
+A potentially bad thing about `usearch` is that it's made by a
+single person and is closed source. It also comes with
+a funny caveat: newer versions of `usearch` come in two flavors,
 free and wildly expensive. This means that mere mortals (i.e.,
 non-Broadies) must be content to use the free version, which will only
-process 2 Gb of data at a time. If you need to call OTUs *de novo* from
+process 2 Gb of data at a time.[^vsearch] If you need to call OTUs *de novo* from
 an enormous data set, then you're sunk; if you merely want to merge,
 quality filter, or do alignments, then it's merely annoying.[^split] QIIME comes
 with an older version of `usearch` that doesn't have as many
 features but which also doesn't have the memory restriction.
 
 [^split]: Most other things you do with 16S data are parallelizable: you don't need to hold the entire dataset in memory at once, you just need little parts of it. For example, if you want to use `usearch` to merge a big paired-end dataset, you can split the forward and reverse read files into smaller chunks and merge each pair of chunks one-by-one.
+
+[^vsearch]: The closed-source and the wildly-expensive problems might be solved by an open-source implementation of USEARCH and the other algorithms, as is being developed under the creative name [VSEARCH](http://dx.doi.org/10.7287/peerj.preprints.2409v1), where I think the V stands for "versatile".
 
 ### mothur
 
