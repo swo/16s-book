@@ -41,9 +41,9 @@ those strains whose isolated DNA was 70% DNA-DNA-hybridization similar.[^concept
 
 In the 1990s, people sequenced the 16S genes of the strains grouped into species
 by the hybridization assay. It emerged as a rule of thumb that two bacteria were
-the same species if their 16S genes had 97% nucleotide identity. 
+the same species if their 16S genes had 97% nucleotide identity.
 
-Because of this history, a lot of discussion around OTUs involves finding 
+Because of this history, a lot of discussion around OTUs involves finding
 97% clusters, and some people will take "OTU" to mean "97% clusters". I try
 here to be a little more open-minded: I say an OTU is whatever thing comes out
 of your method of combining unique 16S sequences into some
@@ -58,7 +58,7 @@ Historically, people called OTUs because for a few reasons.
 Some reasons were practical. OTU calling tends to involve some combination of
 data reduction and denoising. For some people, the data reduction was really
 important. Dereplication can give you hundreds of thousands of unique sequences,
-which can be intellectually or computationally overwhelming. 
+which can be intellectually or computationally overwhelming.
 One might also hope that the denoising aspect of
 some OTU calling improves the quality of the data.
 
@@ -204,7 +204,7 @@ This mix of reference-based and *de novo* is named *open-reference* calling.
 Reference OTUs tend to have unsatisfying names. For example, the Greengenes OTUs are labeled with numbers. It's common (but not necessarily good) practice to do a second round of OTU calling: the new OTUs are made by combining the old OTUs that have the same lineage.
 
 How does this work? Greengenes associates a taxonomy with each of its OTUs.
-This is relatively easy for sequences that came from isolates: 
+This is relatively easy for sequences that came from isolates:
 give that OTU the classification you would have given the
 isolate. It gets more tricky for OTUs that aren't just taken from isolates: it
 requires some sort of phylogenetic inference. This means that you construct a
