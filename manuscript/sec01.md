@@ -27,7 +27,7 @@ will recognize its shortcomings.
 
 ## What this document is not
 
-This document is not perfect. It is full of my own igorance, ideas, and opinions. Take it with a grain of salt. If you find errors, blame me and not my adviser or the other members of my lab. And do point them out to me!
+This document is not perfect. It is full of my own ignorance, ideas, and opinions. Take it with a grain of salt. If you find errors, blame me and not my adviser or the other members of my lab. And do point them out to me!
 
 This document is also not intended to be a literature review. Next-generation
 sequencing for microbial ecology
@@ -37,5 +37,5 @@ familiar with my lab's work and with the way my labmates and I process our data.
 
 This document is not a tutorial. If you desperately need to turn some raw
 data into OTU tables in the next 10 hours, don't read this document. If you
-wat to know something more principled about *how* to turn fastqs into
+want to know something more principled about *how* to turn fastq's into
 OTU tables, read on.
