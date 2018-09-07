@@ -6,3 +6,12 @@ Lab at MIT.
 
 This is the same content as was published on
 [Leanpub](https://leanpub.com/primer16s).
+
+## To do
+
+- Clean up formatting for Pandoc (not Leanpub) style Markdown
+- Update references (e.g., Qiime 2, DADA 2, etc.)
+
+## Author
+
+Scott Olesen <swo@alum.mit.edu>
