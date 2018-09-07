@@ -30,56 +30,102 @@ are:
 
 [^line]: Confusingly, the definition of a "line" on Windows is different from Unix/Linux/Mac. If you ever pass data between these two computer systems, make sure that have adjusted the line endings using `dos2unix` (or `unix2dos`). You can also look up how to do this with `tr`, etc.
 
-1. The *header* line (or "at" line). It must begin with the
-    at-character `@`. The format of the rest of the line depends on the
-    Illumina software version, but in general it gives information about
-    the read: the name of the instrument it was sequenced on, the
-    flowcell lane, the position of the read on the cell, and whether it
-    is a forward or reverse read. In some version of Illumina, the
-    barcode read is in the read's header. You can put whatever information
-    you want in this line. For example, fastqs on NCBI might have
-    `length=1234` somewhere after all the Illumina stuff.
-2.  The *sequence* line. Just like it sounds: a series of letters. Note
-    that they might not all be `ACGT`: other letters are allowed to say
-    that it might be any of a group of bases. For example, `R` means
-    purine (`A` or `G`). `N` means "no idea, any base possible".[^iupac]
-3.  The *plus* line. It must begin with the plus-character `+`.
-    Bizarrely, it can contain anything. Most people set it to the same
-    thing as the at-line (which is a waste of space)
-    or nothing.[^plusline]
-4.  The *quality* line. Every nucleotide in the sequence line has an
-    associated quality. Qualities are encoded by letters on the
-    quality line. Confusingly, this encoding has changed in overlapping
-    and sometimes non-redundant ways.[^ascii] In the newest Illumina format, the
-    encoding goes, from low quality to high quality:
+1. The *header* (or "at") line
+2. The *sequence* line
+3. The *plus* line
+4. The *quality* line.
 
-    ~~~~~~~~
+The header line gives an identifier for the read. The line must begin with the
+at-character `@`. The format of the rest of the line depends on the Illumina
+software version, but in general it gives information about the read: the name
+of the instrument it was sequenced on, the flowcell lane, the position of the
+read on the cell, and whether it is a forward or reverse read. In some version
+of Illumina, the barcode read is in the read's header. You can put whatever
+information you want in this line. For example, fastqs on NCBI might have
+`length=1234` somewhere after all the Illumina stuff.
+
+Like the name suggests, the sequence line is a series of letters encoding the
+sequencing data, one character per nucleotide. Note that the letter might not
+all be `ACGT`. Other letters are allowed to say that it might be any of a group
+of bases. For example, `R` means purine (`A` or `G`). `N` means "no idea, any
+base possible".[^iupac]
+
+I call line 3 the "plus" line because it must begin with the plus-character
+`+`. Bizarrely, the rest of the line can be anything. Most people set it to the
+same thing as the at-line (which is a waste of space) or nothing.[^plusline]
+
+The quality line gives information about the quality of the base calls shown in
+the sequence line.  Each character gives information about the quality of one
+base call.  Confusingly, the encoding has changed in overlapping and sometimes
+non-redundant ways.[^ascii] In the newest Illumina format, the encoding goes,
+from low quality to high quality:
+
     !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI
-    ~~~~~~~~
 
-    The letter `I` means that there is
-    a {$$}10^{-4.0}{/$$} probability that this base is wrong (i.e., a 99.99%
-    chance that it is correct). `H` means that there is a {$$}10^{-3.9}{/$$}
-    chance; `G` means {$$}10^{-3.8}{/$$}, and so on.[^phred] The exclamation
-    point is special: it means a quality of zero, i.e., that the
-    sequencer has no idea what that base is.[^excl]
-	
-[^iupac]: These other options are the IUPAC nucleotide abbreviations. There is a one-letter code for every possible combination of the four nucleotides.
-[^ascii]: Technically, these different encodings are named by their ASCII "offsets". ASCII is a system that associates individual characters with integers. The system I show here has an ASCII offset of 33: the character `I` has an ASCII value of 73, and the offset means you subtract the offset 33 from the ASCII value 73 to get the quality score 40. The other common offset is 64: in that case, the character `I` encodes quality 9. Illumina used a 64-offset for a while, but newer machines use a 33-offset. You can tell the difference getting familiar with the characters used and just looking by eye, by running your pipeline and seeing if it breaks, or by using a tool like `usearch -fastq_chars`.
-[^plusline]: The original fastq [specification](http://dx.doi.org/10.1093/nar/gkp1137) (doi:10.1093/nar/gkp1137) allowed the sequence and quality information to run over multiple lines (like in the fasta format). This led to a lot of confusion, since `+` and `@` appear in some quality encodings. So it's now recommended to *not* spread the sequence and quality information over multiple lines. Thus, the plus line is there for backward compatibility.
-[^phred]: This conversion between quality {$$}Q{/$$} (the integer) and the probability {$$}p{/$$} of incorrect calling is the "Phred" or "Sanger" system: {$$}Q = -10 \log_{10} p{/$$}, or equivalently, {$$}p = 10^{-Q/10}{/$$}. There is at least one other way of converting between {$$}Q{/$$} and {$$}p{/$$}, the "Solexa" system.
-[^excl]: Even more confusingly, in some versions of Illumina, the very low ASCII scores were used to mean special things. In the older, 64-offset Illumina encoding, quality 3 (character `C`) was the lowest possible, and the quality 2 character (character `B`) was instead used to show that the Illumina software had done its own internal quality trimming and had decided that, starting with the first `B`, that the rest of the sequence was "bad". To my relief, this weird system is not used in the newer Illumina (versions 1.8 and above). I personally think the sequencer should give you *just* raw data, not some combination or raw data and partially-processed data.
+The letter `I`, the highest-quality mark, means that there is a $10^{-4.0}$
+probability that this base is wrong (i.e., a 99.99% chance that it is correct).
+`H`, the second-highest quality, means that there is a $10^{-3.9}$ chance; `G`
+means $10^{-3.8}$, and so on.[^phred] The exclamation point is special: it
+means a quality of zero, i.e., that the sequencer has no idea what that base
+is.[^excl]
 
-Here's an example fastq entry. The sequence and quality lines are too
-long to fit on the page, so I cut out some letters in the middle and put
-those dots instead. Notice how the quality of the read decreases
-(all the way down to quality 2, encoded by the hash symbol `#`) toward the end of the read. The barcode read
-is `CCGACA`. The `/1` at the end of the first line shows that this is a forward read.
+[^iupac]: These other options are the IUPAC nucleotide abbreviations. There is
+  a one-letter code for every possible combination of the four nucleotides.
+[^ascii]: Technically, these different encodings are named by their ASCII
+  "offsets". ASCII is a system that associates individual characters with
+  integers. The system I show here has an ASCII offset of 33: the character `I`
+  has an ASCII value of 73, and the offset means you subtract the offset 33
+  from the ASCII value 73 to get the quality score 40. The other common offset
+  is 64: in that case, the character `I` encodes quality 9. Illumina used a
+  64-offset for a while, but newer machines use a 33-offset. You can tell the
+  difference getting familiar with the characters used and just looking by eye,
+  by running your pipeline and seeing if it breaks, or by using a tool like
+  `usearch -fastq_chars`.
+[^plusline]: The original fastq
+  [specification](http://dx.doi.org/10.1093/nar/gkp1137)
+  (doi:10.1093/nar/gkp1137) allowed the sequence and quality information to run
+  over multiple lines (like in the fasta format). This led to a lot of
+  confusion, since `+` and `@` appear in some quality encodings. So it's now
+  recommended to *not* spread the sequence and quality information over
+  multiple lines. Thus, the plus line is there for backward compatibility.
+[^phred]: This conversion between quality $Q$ (the integer) and the
+  probability $p$ of incorrect calling is the "Phred" or "Sanger"
+  system: $Q = -10 \log_{10} p$, or equivalently, $p =
+  10^{-Q/10}$. There is at least one other way of converting between
+  $Q$ and $p$, the "Solexa" system.
+[^excl]: Even more confusingly, in some versions of Illumina, the very low
+  ASCII scores were used to mean special things. In the older, 64-offset
+  Illumina encoding, quality 3 (character `C`) was the lowest possible, and the
+  quality 2 character (character `B`) was instead used to show that the
+  Illumina software had done its own internal quality trimming and had decided
+  that, starting with the first `B`, that the rest of the sequence was "bad".
+  To my relief, this weird system is not used in the newer Illumina (versions
+  1.8 and above). I personally think the sequencer should give you *just* raw
+  data, not some combination or raw data and partially-processed data.
+
+Here's an example fastq entry. The sequence and quality lines are too long to
+fit on the page, so I cut out some letters in the middle and put those dots
+instead.
+
+Notice how the quality of the read decreases (all the way down to
+quality 2, encoded by the hash symbol `#`) toward the end of the read. The
+barcode read is `CCGACA`. The `/1` at the end of the first line shows that this
+is a forward read.
 
     @MISEQ578:1:1101:15129:1752#CCGACA/1
     TATGGTGCCAGCCGCCGCGGTA...GCGAAGGCGGCTCACTGGCTCGATACTGACGCTGAG
     +
     >1>11B11B11>A1AA0A00E/...FF@@<@FF@@@@FFFFFFEFF@;FE@FF/9-AAB##
+
+Some things to note about this read:
+
+- The first line gives information about the machine used, where the read was
+  on the flow cell, etc. `CCGACA` was the barcode read, and the final `/1`
+  means it was a forward read.
+- The plus line has been left blank.
+- The quality of the read decreases from `>`, encoding quality 29 ($10^{-2.9} =
+  0.1\%$ probability of error), all the way down to `#`, or quality 2
+  ($10^{-0.2} = 63\%$ probability of error).
 
 ### Fasta format
 
@@ -87,18 +133,29 @@ Fasta files usually have the extension `.fasta`, `.fa`, or `.fna`.[^fasta] Fasta
 files are human-readable. They are made up of *entries* that each
 correspond to a single sequence. Each entry has this format:
 
-1.  A *header* line that starts with the greater-than symbol `>`.
-	This signals the start of a
-    new entry. The stuff after `>` is usually some kind of ID that names
-    this sequence. There might be other information there too.
-2.  One or more *sequence* lines. The line breaks are not meaningful: the
-    sequence for this entry just keeps on going until you hit another
-    `>`. The early recommendation was to wrap all lines at 80 characters
-    to make them easy to read on old-school terminals. Many people and
-    software tools conform to this recommendation; others make each
-    entry just two lines, one header and one sequence. Both are allowed.
+1. A *header* line.
+2. One or more *sequence* lines.
 
-[^fasta]: The last `a` in `fasta` stands for "all", meaning nucleotide or amino acid or whatever. The `n` in `fna` stands for "nucleotide".
+The *header* line must start with the greater-than symbol `>`. This signals the
+start of a new entry. The stuff after `>` is usually some kind of ID that names
+this sequence. There might be other information there too.
+
+In a fastq file, each linebreak was meaningful. In a fasta file, only the
+linebreak at the end of the header line is meaningful. Linebreaks in the
+following sequence lines are all ignored.  The sequence for this entry just
+keeps on going until you hit another `>`.[^fasta_newrecord] The early
+recommendation was to wrap all lines at 80 characters to make them easy to read
+on old-school terminals. Many people and software tools conform to this
+recommendation; others make each entry just two lines, one header and one
+sequence. Both are allowed.
+
+[^fasta]: The last `a` in `fasta` stands for "all", meaning nucleotide or amino
+  acid or whatever. The `n` in `fna` stands for "nucleotide".
+[^fasta_newrecord]: Technically, a new record should begin only when you see a
+  `>` at the start of a new line. However, not all fasta parsers are this
+  careful. The reasoning is that you usually don't have `>` characters in the
+  sequence data, so they get lazy and say "any time I see `>` it means there's
+  a new entry".
 
 Fasta files provide less information than fastq files, so normally
 you'll move to a fasta format when you've decided you aren't going to
@@ -108,27 +165,30 @@ Here's an example fasta entry in the traditional format (i.e., each line
 no more than 80 characters and the sequence is spread over multiple
 lines).
 
-~~~~~~~~
->seq1;size=1409414;
-TACGGAGGATCCGAGCGTTATCCGGATTTATTGGGTTTAAAGGGAGCGTAGGCGGGTTGT 
-TAAGTCAGTTGTGAAAGTTTGCGGCTCAACCGTAAAATTGCAGTTGATACTGGCATCCTT 
-GAGTACAGTAGAGGTAGGCGGAATTCGTGGTGTAGCGGTGAAATGCTTAGATATCACGAA 
-GAACTCCGATTGCGAAGGCAGCCTGCTGGACTGTAACTGACGCTGATGCTCGAAAGTGTG
-GGTATCAAACAGG
-~~~~~~~~
+    >seq1;size=1409414;
+    TACGGAGGATCCGAGCGTTATCCGGATTTATTGGGTTTAAAGGGAGCGTAGGCGGGTTGT
+    TAAGTCAGTTGTGAAAGTTTGCGGCTCAACCGTAAAATTGCAGTTGATACTGGCATCCTT
+    GAGTACAGTAGAGGTAGGCGGAATTCGTGGTGTAGCGGTGAAATGCTTAGATATCACGAA
+    GAACTCCGATTGCGAAGGCAGCCTGCTGGACTGTAACTGACGCTGATGCTCGAAAGTGTG
+
+Note that the header line includes an identifier for this read (`seq1`) as well
+as some other data (the read appeared 1.4 million times in this data).
 
 ### Other formats
 
-I've been talking about Illumina, but the other important data type
-comes from 454 sequencing. Raw 454 data comes in *sff* format. Unlike
-fastq files, sff files are not human-readable. Luckily, you can convert
-sff files to fastq files pretty easily.[^sff]
-Unluckily, 454 sequence data has its own in's and out's that are beyond
-the scope of this document. Caveat sequentor.[^latin1]
+I've been talking about Illumina, but the other important data type comes from
+454 sequencing. Raw 454 data comes in *sff* format. Unlike fastq files, sff
+files are not human-readable. Luckily, you can convert sff files to fastq files
+pretty easily.[^sff] Unluckily, 454 sequence data has its own in's and out's
+that are beyond the scope of this document. Caveat sequentor.[^latin1]
 
-[^sff]: 454 sequencing is a fundamentally different technology from Illumina, so converting the raw sff to fastq involves some inference and processing. sff files are not human-readable, so you'll probably want to use a ready-made tool like `biopython`'s `convert` command or a tool like `sff2fastq`.
+[^sff]: 454 sequencing is a fundamentally different technology from Illumina,
+  so converting the raw sff to fastq involves some inference and processing.
+  sff files are not human-readable, so you'll probably want to use a ready-made
+  tool like `biopython`'s `convert` command or a tool like `sff2fastq`.
 
-[^latin1]: That's a joke for Latin scholars. It's meant to mean "let the one processing the data beware".
+[^latin1]: That's a joke for Latin scholars. It's meant to mean "let the one
+  processing the data beware".
 
 ## Existing tools
 
@@ -140,22 +200,24 @@ with your own data, the more computer skills you'll need. You'll also
 need more of your own skills if you want to do more creative analysis or
 be more sure of exactly what's being done with your data.[^fault]
 
-[^fault]: This all being said, I don't fault anyone for using tools that actually *work*. Some of the theoretically "nicer" tools aren't coded in a way that makes them easy to use, robust, or capable of working on big datasets. Many theoretically nice tools don't have good documentation, which makes them essentially unusable.
+[^fault]: This all being said, I don't fault anyone for using tools that
+  actually *work*. Some of the theoretically "nicer" tools aren't coded in a
+  way that makes them easy to use, robust, or capable of working on big
+  datasets. Many theoretically nice tools don't have good documentation, which
+  makes them essentially unusable.
 
 ### QIIME
 
-The great and mighty [QIIME](http://www.qiime.org) is a big part of
-the 16S data processing landscape. QIIME was one of the two big
-pipelines used to analyze the HMP data. I see the taxa plots produced
-by QIIME in many papers.
+The great and mighty [QIIME](http://www.qiime.org) is a big part of the 16S
+data processing landscape. QIIME was one of the two big pipelines used to
+analyze the HMP data. I see the taxa plots produced by QIIME in many papers.
 
 ### usearch
 
-The great and mighty [`usearch`](http://www.drive5.com/usearch)
-underlies a lot of 16S data processing.
-A lot of QIIME is built on the back of `usearch`. `usearch` is a single program
-that has an ever-growing number of functionalities (including, the
-algorithms USEARCH, UCLUST, and UPARSE).
+The great and mighty [`usearch`](http://www.drive5.com/usearch) underlies a lot
+of 16S data processing.  A lot of QIIME is built on the back of `usearch`.
+`usearch` is a single program that has an ever-growing number of
+functionalities (including, the algorithms USEARCH, UCLUST, and UPARSE).
 
 Because USEARCH is so widely used, I will take a moment to dive a little more
 deeply into its workings. I have seen a lot of confusion arise because of
@@ -187,10 +249,10 @@ which sequence will be the best match before actually performing the alignment.
 USEARCH guesses the sequence similarity between two sequences using the *U*
 value (which is the U in USEARCH). *U* is the number of unique *words* shared
 by two sequences. You get these words by looking for length *w* (default is 8)
-subsequences starting at positions spaced {$$}\mu{/$$} apart. For example, if
-{$$}\mu = 1{/$$}, then your words are all the *w*-mers in the sequence. If
-{$$}\mu = w{/$$}, then your words are the first *w* nucleotides, the next *w*
-nucleotides, and so forth. Conveniently, sensible values for {$$}\mu{/$$}
+subsequences starting at positions spaced $\mu$ apart. For example, if
+$\mu = 1$, then your words are all the *w*-mers in the sequence. If
+$\mu = w$, then your words are the first *w* nucleotides, the next *w*
+nucleotides, and so forth. Conveniently, sensible values for $\mu$
 are inferred using tables of optimal choices derived from running USEARCH
 on databases of sequences using different values of the identity threshold.
 
@@ -203,8 +265,7 @@ reference-based calling. They expected that since their *de novo* and
 reference-based OTUs were both 97%, they should be about the same "size",
 except that reference-based OTU calling would miss some of the OTUs that *de
 novo* calling would catch. In fact, this approach usually leads to *more* OTUs
-in the reference-based calling. I wrote a [blog
-post](http://microbiome.mit.edu/2016/02/07/usearch/) unpacking this phenomenon.
+in the reference-based calling.
 
 In light of these weird effects, I caution you to carefully read the `usearch`
 documentation to get a rough sense of what it's doing. I got weird results for
@@ -219,20 +280,27 @@ and demultiplexing) but not heavy-lifting (like merging, quality
 filtering, clustering, or sequence alignment), then `usearch` is for
 you.
 
-A potentially bad thing about `usearch` is that it's made by a
-single person and is closed source. It also comes with
-a funny caveat: newer versions of `usearch` come in two flavors,
-free and wildly expensive. This means that mere mortals (i.e.,
-non-Broadies) must be content to use the free version, which will only
-process 2 Gb of data at a time.[^vsearch] If you need to call OTUs *de novo* from
-an enormous data set, then you're sunk; if you merely want to merge,
-quality filter, or do alignments, then it's merely annoying.[^split] QIIME comes
-with an older version of `usearch` that doesn't have as many
+A potentially bad thing about `usearch` is that it's made by a single person
+and is closed source. It also comes with a funny caveat: newer versions of
+`usearch` come in two flavors, free and wildly expensive. This means that mere
+mortals (i.e., non-Broadies) must be content to use the free version, which
+will only process 2 Gb of data at a time.[^vsearch] If you need to call OTUs
+*de novo* from an enormous data set, then you're sunk; if you merely want to
+merge, quality filter, or do alignments, then it's merely annoying.[^split]
+QIIME comes with an older version of `usearch` that doesn't have as many
 features but which also doesn't have the memory restriction.
 
-[^split]: Most other things you do with 16S data are parallelizable: you don't need to hold the entire dataset in memory at once, you just need little parts of it. For example, if you want to use `usearch` to merge a big paired-end dataset, you can split the forward and reverse read files into smaller chunks and merge each pair of chunks one-by-one.
+[^split]: Most other things you do with 16S data are parallelizable: you don't
+  need to hold the entire dataset in memory at once, you just need little parts
+  of it. For example, if you want to use `usearch` to merge a big paired-end
+  dataset, you can split the forward and reverse read files into smaller chunks
+  and merge each pair of chunks one-by-one.
 
-[^vsearch]: The closed-source and the wildly-expensive problems might be solved by an open-source implementation of USEARCH and the other algorithms, as is being developed under the creative name [VSEARCH](http://dx.doi.org/10.7287/peerj.preprints.2409v1), where I think the V stands for "versatile".
+[^vsearch]: The closed-source and the wildly-expensive problems might be solved
+  by an open-source implementation of USEARCH and the other algorithms, as is
+  being developed under the creative name
+  [VSEARCH](http://dx.doi.org/10.7287/peerj.preprints.2409v1), where I think
+  the V stands for "versatile".
 
 ### mothur
 
@@ -257,23 +325,21 @@ you some headaches later on by knowing what happened in the middle.
 
 ### The sweat of your brow
 
-What does it mean to "look" at your data? The answer is that you'll need
-some computational skills. By "computational" I mean "command-line".
-This means
-familiarity with the basic tools of the Unix terminal (`cat`, `cd`,
-`cp`, `ls`, `mkdir`, `mv`, `rm`, `head`, `less`, `sed` or `awk`, `wc`,
- `grep`, and `vi` or `emacs`) and the ability to use some programming language.
- 
-You *can* open OTU tables in Excel or whatever, but if you try to use the
-more familiar office-sytle software to do the heavy lifting here, you
-will be disappointed. Opening a 5 Gb fastq in Notepad or TextEdit 
-won't be fun. Maybe one day we'll have sexy drag-and-drop,
-hologram-style data processing for 16S, but for the foreseeable future
-it's going to look like the scene in *Jurassic Park* where Samuel L.
-Jackson is hunched over a computer muttering "Access main program... 
-Access main security... Access main program grid... Please! Goddamn it!
-Hate this hacker crap!"
- 
+What does it mean to "look" at your data? The answer is that you'll need some
+computational skills. By "computational" I mean "command-line".  This means
+familiarity with the basic tools of the Unix terminal (`cat`, `cd`, `cp`, `ls`,
+`mkdir`, `mv`, `rm`, `head`, `less`, `sed` or `awk`, `wc`, `grep`, and `vi` or
+`emacs`) and the ability to use some programming language.
+
+You *can* open OTU tables in Excel or whatever, but if you try to use the more
+familiar office-sytle software to do the heavy lifting here, you will be
+disappointed. Opening a 5 Gb fastq in Notepad or TextEdit won't be fun. Maybe
+one day we'll have sexy drag-and-drop, hologram-style data processing for 16S,
+but for the foreseeable future it's going to look like the scene in *Jurassic
+Park* where Samuel L. Jackson is hunched over a computer muttering "Access
+main program...  Access main security... Access main program grid... Please!
+Goddamn it! Hate this hacker crap!"
+
 ### A programming language
 
 Those simple command-line tools will get you pretty far, but as some point
@@ -283,40 +349,35 @@ write a program.
 
 Here are some criteria to help you decide what language is best for you:
 
--   *Support*. You'll have a better time using a language that has good
-    documentation, a large global community of users (who produce
-    informal documentation in places like [StackOverflow](http://www.stackoverflow.com)), and a local
-    community of users, i.e., the person down the hall who can help you
-    figure out what that syntax error means.
+- *Support*. You'll have a better time using a language that has good
+  documentation, a large global community of users (who produce informal
+  documentation in places like [StackOverflow](http://www.stackoverflow.com)),
+  and a local community of users, i.e., the person down the hall who can help
+  you figure out what that syntax error means.
+- *Bioinformatics packages.* It's nice to not re-invent the wheel.  Some
+  programming languages have mature, extensive bioinformatics toolkits.
+- *Appropriateness for your purpose*. Compiled programming languages run fast
+  but are slow to develop; scripting languages run slow but are fast to
+  develop. If you're going to be crunching huge datasets that will take days to
+  process, think about a compiled language designed for parallelization. If
+  you're just working on a few small datasets on your own computer, think about
+  a scripting language that's easier to use.
 
--   *Bioinformatics packages.* It's nice to not re-invent the wheel.
-    Some programming languages have mature, extensive
-    bioinformatics toolkits.
-
--   *Appropriateness for your purpose*. Compiled programming languages
-    run fast but are slow to develop; scripting languages run slow but
-    are fast to develop. If you're going to be crunching huge datasets
-    that will take days to process, think about a compiled language
-    designed for parallelization. If you're just working on a few small
-    datasets on your own computer, think about a scripting language
-    that's easier to use.
-
-My language of choice for 16S data processing is [Python](http://www.python.org). It's a popular
-language with great documentation. The people around me use it. It has a
-good bioinformatics package (`biopython`). It's relatively slow but I
-don't care because I spend much more time programming that I do actually
-running data.
+My language of choice for 16S data processing is
+[Python](http://www.python.org). It's a popular language with great
+documentation. The people around me use it. It has a good bioinformatics
+package (`biopython`). It's relatively slow but I don't care because I spend
+much more time programming that I do actually running data.
 
 I think [Perl](http://www.perl.org) used to be the most popular bioinformatics
 programming language, and I think it's being displaced by Python.
-[`R`](http://www.r-project.org) is a great language for analyzing
-making plots and doing statistics on the resulting OTU tables, but
-it's not super-handy for working with raw sequences. Some people will
-swear by working in C or C++, but I think you should wait until you
-really need a 10-fold speedup before going that deep.
-Apparently [Matlab](http://www.mathworks.com/products/matlab)
-has some bioinformatics capability.
-[Julia](http://julialang.org) might one day be a cool option.
+[`R`](http://www.r-project.org) is a great language for analyzing making plots
+and doing statistics on the resulting OTU tables, but it's not super-handy for
+working with raw sequences. Some people will swear by working in C or C++, but
+I think you should wait until you really need a 10-fold speedup before going
+that deep.  Apparently [Matlab](http://www.mathworks.com/products/matlab) has
+some bioinformatics capability.  [Julia](http://julialang.org) might one day be
+a cool option.
 
 ## Some early challenges
 
@@ -331,21 +392,20 @@ took off one full week of work to read and do all the exercises in
 Mark Lutz's _Learning Python_. It was one of the best investments I've
 ever made. You learn more by putting in the time. It will pay off.
 
-Another personal anecdote: after working with QIIME and then with
-another grad student's codebase, I finally decided to write my own
-[16S processing software](https://github.com/swo/caravan) from scratch.
-I learned most of what's in this
-document as I learned what I had to do to write that software. If
-starting with a real big kid script that does real data processing
-sounds like too much, try working on the problems at [Rosalind](http://www.rosalind.info).
-They start out easy and get progressively harder. It's a nice way
-to do something for a half hour and get the instant gratification of
-a gold star.
+Another personal anecdote: after working with QIIME and then with another grad
+student's codebase, I finally decided to write my own [16S processing
+software](https://github.com/swo/caravan) from scratch.  I learned most of
+what's in this document as I learned what I had to do to write that software.
+If starting with a real big kid script that does real data processing sounds
+like too much, try working on the problems at
+[Rosalind](http://www.rosalind.info).  They start out easy and get
+progressively harder. It's a nice way to do something for a half hour and get
+the instant gratification of a gold star.
 
 ### Looking at real data
 
-If you're reading this packet, you probably have your own data set
-in hand. If not, two great places to get some data to play with are
-the HMP project's [raw sequences](http://hmpdacc.org/HMR16S) or the
-data generated in [Caporaso *et al.*](http://dx.doi.org/10.1186/gb-2011-12-5-r50) from
+If you're reading this packet, you probably have your own data set in hand. If
+not, two great places to get some data to play with are the HMP project's [raw
+sequences](http://hmpdacc.org/HMR16S) or the data generated in [Caporaso *et
+al.*](http://dx.doi.org/10.1186/gb-2011-12-5-r50) from
 [MG-RAST](http://metagenomics.anl.gov).

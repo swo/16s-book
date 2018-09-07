@@ -4,18 +4,18 @@ Hooray, you have sequence data! Now what? I'll assume you did paired-end sequenc
 
 ## Raw data and metadata
 
-Before trying to process your dataset, be sure you have the appropriate raw data[^3] and metadata.
+Before trying to process your dataset, be sure you have the appropriate raw data[^raw_data] and metadata.
 In all cases, this means you'll need one set of reads.
 For Illumina, this means a *fastq* file that might have a name like:
-~~~~~~~~
-`130423Alm_D13-1939_1_sequence.fastq`.
-~~~~~~~~
+
+    130423Alm_D13-1939_1_sequence.fastq
+
 This filename is typical for raw sequencing data: it has information about the date, the
 group that requested the sequencing, then something about the specifics of the sequencing
 run. The `_1_` indicates that these were forward reads. (Forward read files might have `_R1_`
 in place of `_1_` in the filename.)
 
-[^3]: In what follows, I'll talk about "raw data", by which I mean data that you would get from the sequencing center. There is actually a more raw kind of data that comes right out of the sequencing machine that gets processed right away. On the Illumina platform, this data is CASAVA. Different version of CASAVA produce slightly different output, and every sequencer might have a different version of CASAVA, so be prepared for slight variations in the format of your raw data.
+[^raw_data]: In what follows, I'll talk about "raw data", by which I mean data that you would get from the sequencing center. There is actually a more raw kind of data that comes right out of the sequencing machine that gets processed right away. On the Illumina platform, this data is CASAVA. Different version of CASAVA produce slightly different output, and every sequencer might have a different version of CASAVA, so be prepared for slight variations in the format of your raw data.
 
 If you did paired-end sequencing, you will also need the *reverse reads*.
 This is a fastq file with a
@@ -34,9 +34,9 @@ reads), then you will also need the *barcode* or *index reads*. Depending on you
 information might be in different places. In some datasets, it's in the file
 with the forward reads. For example, the file I mentioned above, the first line
 is
-~~~~~~~~
-`@MISEQ578:1:1101:15129:1752#CCGACA/1`.
-~~~~~~~~
+
+    @MISEQ578:1:1101:15129:1752#CCGACA/1
+
 The barcode read is
 `CCGACA` (between the `#` and the `/1`). In other datasets, you might find
 the index reads in a file with a name that has `_R3_`, `_I_`, or `_I1_` in
@@ -92,25 +92,40 @@ that sort of thing.
 These steps take the raw data and turn it into biologically relevant stuff.
 There is some freedom about the order in which they can be done.
 
-- *Removing* (or "trimming") *primers*. The primers are a man-made thing. If there was a mismatch between the primer and the DNA of interest, you'll only see the primer. In this sense, the primer sequence masks the true biological content of the DNA of interest. Removing the primers is conservative in the sense that you won't come to any false conclusions about the content of the DNA of interest, but the cost is that, for the most part, the primer sequences matched the biological DNA pretty well. Regardless of the tradeoff, common practice is to cut off the primers.
+- *Removing* (or "trimming") *primers*. The primers are a man-made thing. If
+  there was a mismatch between the primer and the DNA of interest, you'll only
+  see the primer. In this sense, the primer sequence masks the true biological
+  content of the DNA of interest. Removing the primers is conservative in the
+  sense that you won't come to any false conclusions about the content of the
+  DNA of interest, but the cost is that, for the most part, the primer
+  sequences matched the biological DNA pretty well. Regardless of the tradeoff,
+  common practice is to cut off the primers.
 - *Quality filter* (or "trim") reads. For every nucleotide in every read, the
-sequencer gives some indication of its assuredness that that base is in fact
-the base the sequencer reported. This assuredness is called *quality*: if a base has high quality,
-you can be sure that that base was called correctly. If it has low quality, you should be
-more skeptical. In general, reads tend to decrease in quality as they extend,
-meaning that we get less sure that the sequence is correct the further away from
-the primer we go. Some reads also have overall low quality.[^4] Quality
-filtering removes sequences or parts of sequences that we think we cannot trust.
+  sequencer gives some indication of its assuredness that that base is in fact
+  the base the sequencer reported. This assuredness is called *quality*: if a
+  base has high quality, you can be sure that that base was called correctly.
+  If it has low quality, you should be more skeptical. In general, reads tend
+  to decrease in quality as they extend, meaning that we get less sure that the
+  sequence is correct the further away from the primer we go. Some reads also
+  have overall low quality.[^4] Quality filtering removes sequences or parts of
+  sequences that we think we cannot trust.
 - *Merging* (or "overlapping" or "assembling" or "stitching") read pairs. When
-doing paired-end sequencing, it's desirable for the two reads in the pair to
-overlap in the middle. This produces a single full-length read whose quality in
-the middle positions is hopefully greater than the quality of either of the two
-reads that produced it. There's no such thing as "merging" for single-end
-sequencing.
-- *Demultiplexing* (or "splitting"). The man-made barcode sequences are replaced by the names of the samples the sequences came from.
+  doing paired-end sequencing, it's desirable for the two reads in the pair to
+  overlap in the middle. This produces a single full-length read whose quality
+  in the middle positions is hopefully greater than the quality of either of
+  the two reads that produced it. There's no such thing as "merging" for
+  single-end sequencing.
+- *Demultiplexing* (or "splitting"). The man-made barcode sequences are
+  replaced by the names of the samples the sequences came from.
 
 
-[^4]: Annoyingly, it's my experience that the first reads in the raw data are substantially worse than most of the reads in the file. In the dataset I'm looking at, the first 3,000 or so reads (of 13.5 million total) have an average quality that is about half of what's typical for that dataset. This means that, if you want to check the quality of the sequences in a dataset, you can't just look at the first few entries, you need to go some ways down into the file.
+[^4]: Annoyingly, it's my experience that the first reads in the raw data are
+  substantially worse than most of the reads in the file. In the dataset I'm
+  looking at, the first 3,000 or so reads (of 13.5 million total) have an
+  average quality that is about half of what's typical for that dataset. This
+  means that, if you want to check the quality of the sequences in a dataset,
+  you can't just look at the first few entries, you need to go some ways down
+  into the file.
 
 ![Merging aligns reads, makes a new sequence, and computes new quality scores. Adapted from the `usearch` manual.](images/merge-quality.png)
 
@@ -118,10 +133,15 @@ sequencing.
 
 These steps compact the data and make it easier to work with when calling OTUs. They can happen simultaneously.
 
-- *Dereplicating*. There are fewer *sequences* (strings of `ACGT`) than there are *reads*. This step identifies the set of unique sequences, which is usually much smaller than the number of reads.
-- *Proveniencing* (or "mapping" or "indexing"). How many reads of each sequence were in each sample? (Only I call it "proveniencing"[^3]. I find all the other names I've heard confusing.)
+- *Dereplicating*. There are fewer *sequences* (strings of `ACGT`) than there
+  are *reads*. This step identifies the set of unique sequences, which is
+  usually much smaller than the number of reads.
+- *Proveniencing* (or "mapping" or "indexing"). How many reads of each sequence
+  were in each sample? (Only I call it "proveniencing"[^3]. I find all the
+  other names I've heard confusing.)
 
-[^3]: In archaeology, an artifact's _provenience_ is the place within the archaeological site where it was found.
+[^3]: In archaeology, an artifact's _provenience_ is the place within the
+  archaeological site where it was found.
 
 ### Phase III: OTU calling
 
