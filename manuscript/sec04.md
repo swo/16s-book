@@ -1,13 +1,4 @@
 ```
-*Operational taxonomic units* (OTUs) were once the fundamental unit used
-in 16S data analysis. In most data processing pipelines, OTUs and their
-abundances in the samples were the output.
-
-OTU-calling methods are (to my eyes) surprisingly diverse, and the choice of
-method can have a huge impact on the the results of your analysis. Any
-OTU-based information, plot, or analysis must be interpreted in the
-context of how those OTUs were called.
-
 A pet peeve of mine is when someone asks "how many OTUs" were in some sample.
 That number, on its own, means very little. It matters how the OTUs were called.
 Asking "how many OTUs" is like asking how many kinds of board games there are. The answer

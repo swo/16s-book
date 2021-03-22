@@ -2,12 +2,13 @@
 
 ## Where this document came from
 
-I wrote an early form of this document as a teaching aid for a workshop on 16S
-rRNA data processing that I gave as a graduate student for my research group,
-the Alm Lab at MIT. I finished my PhD in 2016. In 2018, I put this document up
-for the larger world because it was starting to be shared in wider circles.
-Now, in 2021, I'm updating this document to reflect two important new
-developments: denoising and QIIME 2.
+I wrote the first edition of this document as a graduate student for use by my
+research group, the Alm Lab at MIT. In 2018, I published the second edition
+because it was starting to be shared in wider circles. Now, in 2021, I'm
+updating this document with a third edition in order to reorganize the material
+and to include two important new developments: denoising and QIIME 2.  I'm
+grateful to OpenBiome, which gave me the opportunity to do this revision as
+part of a microbiome science seminar course for Aga Khan University.
 
 ## What this document is for
 
