@@ -347,7 +347,7 @@ Two important implementations of
 denoising are DADA2[^dada] and
 Deblur[^deblur].
 
-[^dada2]: Callahan *et al*. (doi:10.1038/nmeth.3869)
+[^dada]: Callahan *et al*. (doi:10.1038/nmeth.3869)
 [^deblur]: Amir *et al*. (doi:10.1128/mSystems.00191-16)
 
 The work of denoising

@@ -168,7 +168,7 @@ sequencing lane. This was expensive and bioinformatically annoying, since,
 especially in those early days of sequencing, it was often hard to distinguish
 a bad lane from a very unusual sample.
 
-[^multi]: Cf., e.g., [Binladen *et al.* (doi:10.1371/journal.pone.0000197).]
+[^multi]: Cf., e.g., Binladen *et al.* (doi:10.1371/journal.pone.0000197).
 
 Multiplexing, by contrast, adds a barcode or "tag" to the 16S amplicon. Each
 barcode corresponds to a sample, and all amplicons in that sample get that
