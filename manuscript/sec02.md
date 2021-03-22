@@ -1,6 +1,6 @@
 # Where 16S data comes from
 
-By "16S data" I mean amplicon sequencing of some section of the bacterial 16S
+By "16S data" I mean amplicon sequencing of some section of the bacterial 16S rRNA
 gene. A lot of what I discuss in this document may also apply to other types of
 taxonomic marker sequences like the eukaryotic 18S or the fungal ITS.
 
@@ -36,7 +36,7 @@ After a sample is taken, the cells in the sample are lysed, typically using some
 
 ## Amplifying the gene
 
-In the amplicon sequencing approach, PCR is used to amplify a section of the
+In the amplicon sequencing approach, polymerase chain reaction (PCR) is used to amplify a section of the
 16S gene. The size of the sequenced section is limited by the length of reads
 produced by high-throughput sequencing. The sections of the 16S gene that are
 amplified are named according to what variable regions of the gene are covered.
@@ -81,8 +81,9 @@ interesting information.
 Amplicon sequence data is also easier to work with from a bioinformatic point of
 view. Amplicon sequences come "pre-aligned". (They're
 not *actually* "aligned" in the bioinformatic sense, but it's a good analogy.)
-This means that you know where each read came from: the 16S gene, from this
-nucleotide position to that nucleotide position. Every read therefore provides,
+This means that you know where each read came from: the 16S gene, starting and ending
+at the parts of the gene the primers were designed to target.
+Every read therefore provides,
 roughly speaking, an equal amount of information about the composition of the
 sample's bacterial community. Shotgun sequences, in contrast, need to be
 assembled, which is far more complicated bioinformatic process than anything
@@ -133,10 +134,10 @@ in early PCR cycles could dominate the sample in late PCR cycles.
 
 In general, PCR bias is not as bad when there is more DNA and (relatedly) when the PCR is run for fewer cycles.
 
-In our lab, some folks have run experiments to quantify PCR bias: they synthesize
-some DNA that looks like bacterial 16S genes, mix that DNA in known proportions,
-amplify the mixture, sequence the amplified DNA, and compare the sequencing data to the known
-proportions of input DNA. The errors are somewhere in the neighborhood of 1% to 10%. 
+In my PhD lab, some folks ran unpublished experiments to quantify PCR bias: they synthesized
+some DNA that looks like bacterial 16S genes, mixed that DNA in known proportions,
+amplified the mixture, sequenced the amplified DNA, and compared the sequencing data to the known
+proportions of input DNA. The errors are somewhere in the neighborhood of 1% to 10%.
 It's not high enough to make me think that 16S data is all garbage, but it is
 high enough to make me doubt small (say, two-fold) changes in composition.
 
@@ -159,9 +160,9 @@ study is a good way to reduce biases.
 
 I suspect that a stronger signal comes from reagent or lab-specific contamination.
 Commercial reagents often come pre-loaded with bacteria. (Like, not in a good way.)
-In our lab, we notice
-that _Halomonas_ and _Shewanella_ species often appear where they shouldn't, and
-the effect appears to depend on the particular extraction kit we use.
+In my PhD lab, we often found
+_Halomonas_ and _Shewanella_ species where they shouldn't be.
+The effect appeared to depend on the particular extraction kit used.
 
 ## Multiplexing helps evaluate contamination (or other weirdness)
 

@@ -2,7 +2,12 @@
 
 ## Where this document came from
 
-I wrote an early form of this document as a teaching aid for a workshop on 16S data processing that I gave for my research group, the Alm Lab at MIT. I eventually put this document up for the larger world because it was starting to be shared in wider circles.
+I wrote an early form of this document as a teaching aid for a workshop on 16S
+rRNA data processing that I gave as a graduate student for my research group,
+the Alm Lab at MIT. I finished my PhD in 2016. In 2018, I put this document up
+for the larger world because it was starting to be shared in wider circles.
+Now, in 2021, I'm updating this document to reflect two important new
+developments: denoising and QIIME 2.
 
 ## What this document is for
 
@@ -11,7 +16,7 @@ processing. I want you to be able to do the analysis that makes the most sense
 for you. Processing 16S data involves a lot of very small decisions (that probably
 have a small effect on your results) and a few big decisions (that certainly have
 a big effect on your results). The nice pipelines make it possible for you to shut your
-eyes to these complications. In contrast, I want to empower you to be able to 
+eyes to these complications. In contrast, I want to empower you to be able to
 critique and doubt other people's methods. That's part of how science advances!
 
 ## Who this document is for
@@ -27,13 +32,14 @@ will recognize its shortcomings.
 
 ## What this document is not
 
-This document is not perfect. It is full of my own ignorance, ideas, and opinions. Take it with a grain of salt. If you find errors, blame me and not my adviser or the other members of my lab. And do point them out to me!
+This document is not perfect. It is full of my own ignorance, ideas, and
+opinions. Take it with a grain of salt.
 
 This document is also not intended to be a literature review. Next-generation
 sequencing for microbial ecology
-is an enormous field, and here I just scratch the surface of
-that field. Some specific methods are included and they show my biases: I'm more
-familiar with my lab's work and with the way my labmates and I process our data.
+is a large field, and here I just scratch the surface.
+Some specific methods are included and they show my biases: I'm more
+familiar with my lab's work and with the way my colleagues and I process our data.
 
 This document is not a tutorial. If you desperately need to turn some raw
 data into OTU tables in the next 10 hours, don't read this document. If you

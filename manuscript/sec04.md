@@ -1,8 +1,7 @@
-# OTU-calling theory
-
-*Operational taxonomic units* (OTUs) are often the fundamental unit used
+```
+*Operational taxonomic units* (OTUs) were once the fundamental unit used
 in 16S data analysis. In most data processing pipelines, OTUs and their
-abundances in the samples are the output.
+abundances in the samples were the output.
 
 OTU-calling methods are (to my eyes) surprisingly diverse, and the choice of
 method can have a huge impact on the the results of your analysis. Any
@@ -13,10 +12,11 @@ A pet peeve of mine is when someone asks "how many OTUs" were in some sample.
 That number, on its own, means very little. It matters how the OTUs were called.
 Asking "how many OTUs" is like asking how many kinds of board games there are. The answer
 depends on how you define "kinds".
+```
+
+# Denoising and OTU calling
 
 ## An abridged history of the OTU
-
-This is my short and probably incorrect history of the OTU concept.
 
 In the 1980s, Carl Woese showed that the 16S gene could be used as a molecular
 clock. Using 16S data, he [re-drew](http://dx.doi.org/10.1073/pnas.87.12.4576)
@@ -43,36 +43,100 @@ In the 1990s, people sequenced the 16S genes of the strains grouped into species
 by the hybridization assay. It emerged as a rule of thumb that two bacteria were
 the same species if their 16S genes had 97% nucleotide identity.
 
-Because of this history, a lot of discussion around OTUs involves finding
-97% clusters, and some people will take "OTU" to mean "97% clusters". I try
-here to be a little more open-minded: I say an OTU is whatever thing comes out
-of your method of combining unique 16S sequences into some
-taxonomically-motivated unit that you think is meaningful for your problem.[^minded]
+Because of this history, a lot of discussion around OTUs involves finding 97%
+clusters, and "OTU" was often used as a shorthand for "97% clusters". To my
+ears, the word "operational" in OTU means that an OTU is whatever group of
+reads you choose to be the unit of analysis in your downstream work.[^minded]
 
 [^minded]: This nomenclature is not universally accepted. For example, some people use "phylotype" to mean a group of sequences that was grouped together because of their similarity to a database sequence and reserve "OTU" for a group of sequences that was made by comparing sequences in a dataset against one another. This also means that I call [oligotyping](http://dx.doi.org/10.1111/2041-210X.12114) (doi:10.1111/2041-210X.12114), which is breaks your OTUs down into finer units, just another kind of OTU-calling.
 
-## Why call OTUs?
+## Denoising
 
-Historically, people called OTUs because for a few reasons.
+Historically, people called OTUs because for a few reasons. A first and very
+practical reason was data reduction. Dereplication can give you hundreds of
+thousands of unique sequences, and doing analysis with hundreds of thousands of
+unique units was computationally infeasible in the early days of 16S
+sequencing.
 
-Some reasons were practical. OTU calling tends to involve some combination of
-data reduction and denoising. For some people, the data reduction was really
-important. Dereplication can give you hundreds of thousands of unique sequences,
-which can be intellectually or computationally overwhelming.
-One might also hope that the denoising aspect of
-some OTU calling improves the quality of the data.
+A second important but still technical reason was denoising. Imperfect
+technology means that one can never really be sure whether two reads have
+different sequences because of technological error or because those two reads
+arose from biologically different sequences in different bacteria. One way to
+denoise data was to say that we couldn't really trust our equipment to be able
+to distinguish sequences that were less than about 97% similar anyway, so we
+might as well lump those sequences into one unit for analysis.
 
-Some reasons are philosophical[^philo] or analytical. If you want to study
+To give a sense of what denoising is about, consider this hypothetical example.
+Say you are sequencing an amplicon that has only 10 nucleotides, and the
+sequencer has an error rate of 1%, meaning that each base pair has an
+independent, 1% chance of being misreported. This means that there is a
+$(0.99)^10 = 90\%$ chance that all 10 nucleotides will be correctly reported, a
+$(0.01) \times (0.99)^9 = 9.1\%$ chance that all but one base pairs will be
+corretly reported, and an approximately 1% chance that there will be two or
+more errors in any particular read.
+
+In this example, if there was only one true sequence in the biological sample,
+then we would expect 90% of reads to be that true sequence, while the remainder
+would be split among the various erroroneous sequences. For example, of the
+9.1% of reads, one in ten (i.e., 0.91% of the total reads) would have an error
+in the first base pair, of which about one-third (i.e., 0.3% of the total reads)
+would have each of the incorrect base pairs in it.
+
+Percent of reads | Read sequence
+--- | ---
+90.4% | GACAGGTACA
+0.3% | ***A***ACAGGTACA
+0.3% | ***C***ACAGGTACA
+0.3% | ***T***ACAGGTACA
+0.3% | G***C***CAGGTACA
+0.3% | G***G***CAGGTACA
+0.3% | G***T***CAGGTACA
+... | ...
+
+On the other hand, if one of these sequences that could be explained as error
+was more frequent than was expected given the statistical model for errors,
+then we would conclude it is also a real, biological sequence. For example, if
+the sequence `***A***ACAGGTACA` appeared as often as the original sequence
+GACAGGTACA, then we would expect that they are both meaningful. However, our
+ability to distinguish real biological variations from technological error is
+limited by the abundance of these potentially erroneous sequences and the
+sequencer error rate: if the error rate is high or the true variant sequence is
+rare, we will not be able to determine that it is *not* simply an erroneous
+read.
+
+Denoisers look through the read sequences and how common they are to infer the
+sequencer's error rate and, using that error rate, which observed read
+sequences are likely erroneous deviations from other, more abundant, "true"
+sequences. In this way, they can distinguish between similar sequences that are
+likely to be truly biologically distinct, in a way that 97% OTU calling would
+be unable to do.
+
+![Algorithms like DADA2 take the opposite approach to denoising, compared to OTU calling. Rather than grouping related sequences in the hopes that they are erroneous variants of one another, explicity denoising algorithms correct the original errors using statistical error models. Reproduced from Callahan *et al*., doi:10.1038/nmeth.3869](images/dada2.png)
+
+The output of denoising algorithms are called *amplicon sequence variants*
+(ASVs). The combination of improved computing power and the potentially
+substantial reduction in numbers of unique sequences that comes from denoising
+means that, in many cases, calling OTUs is no longer a practical necessity.
+However, because the OTU concept dominated 16S data processing for so long, it
+is still common to say that an analysis uses "100% OTUs", which simply means
+that each sequence or ASV was treated as its own OTU. In other words, "100% OTUs"
+means that OTUs weren't called at all!
+
+## Philosophical reasons for OTU calling
+
+Although it is no longer stricly necessary to call OTUs, there are still
+philosophical[^philo] and analytical for doing so, depending on your study's purpose. If you want to study
 bacterial species and are a firm believer in the idea that a 97% cluster is the
 best approximation of a species, then you'd want to organize your data into
-those approximate-species and go from there. More generally, you'll want to
-organize your sequences into some operational unit (i.e., OTU) that works well
-with the kind of analysis you want to do. If you're interested in broad changes
-in community composition, you might want to call OTUs that are your best
-approximations of phyla. If you're interested in what individual organisms are
-doing, you'll probably want to do very little (if any) grouping of sequences
-into OTUs, since the unique sequences are, in a sense, the best information you
-have about those organisms.
+those approximate-species and go from there.
+
+More generally, you'll want to organize your sequences into some operational
+unit (i.e., OTU) that works well with the kind of analysis you want to do.  For
+example, to examine very broad broad changes in community composition, you
+might want to call OTUs that are your best approximations of phyla. If you're
+interested in what individual organisms are doing, you'll probably want to do
+very little (if any) grouping of sequences into OTUs, since the unique
+sequences are, in a sense, the best information you have about those organisms.
 
 [^philo]: There is a [fun review](http://www.jstor.org/stable/10.1086/506237) (jstor:10.1086/506237) of the different ways ecological units are viewed from ontological and functional perspectives.
 
@@ -105,32 +169,26 @@ call OTUs in some way, then assign lineages to OTUs, then do a second round of
 OTU calling in which you merge OTUs that have the same lineage. Now the OTUs are
 labelled by the lineages. This is how the ubiquitous taxa plots are made.
 
-## Common and uncommon OTU-calling methods
+## OTU-calling methods
 
 This is a survey of OTU-calling methods that are out there in the literature. This list is not exhaustive. The methods are listed are in the order I thought was easiest to explain.
 
-### Dereplication
+### Amplicon sequence variants, or 100% identity OTUs
 
-It may sound a little crazy, but simple dereplication is a kind of OTU calling: every unique sequence is its own OTU. Sometimes this approach is called "100% identity OTUs" to emphasize that all sequences in an OTU are 100% similar, that is, that there is only one sequence in each OTU.
-
-The advantage of dereplication is that it's quick and conceptually
-straightforward. You need not wrangle over whether the OTU calling method has
-introduced any weird bias into your data since, roughly speaking, dereplicated
-sequence *are* your data.
+As discussed above, this approach, which was originally infeasible because of
+computational and technical reasons, is becoming increasing popular. Lower
+error rates from sequencers combined with sophisticated denoising algorithms
+means that distinct amplicon sequence variants (ASVs), even ones that differ
+from one another by only one nucleotide, may very well be biologically
+distinct.
 
 ### *De novo* clustering
 
 As the name suggests, *de novo* clustering means making your own OTUs from
-scratch. There is an enormous diversity of *de novo* clustering methods. Some
-importants ones to know are UCLUST and its newer cousin UPARSE, which are
-implemented in the software program `usearch`. UCLUST may be the most popular
-*de novo* clustering algorithm. It is
-popular because it's relatively fast and, more importantly, it's part of the
-QIIME software pipeline (which will come up later). UPARSE is probably better
-and will probably displace UCLUST.
-
-Briefly, these algorithms try to identify a set of OTUs that are at some
-distance from one another. (As you might guess, 97% OTUs are popular.) In some
+scratch. There is an enormous diversity of *de novo* clustering methods, but
+they all follow the same basic principle:
+they try to identify a set of OTUs that are at some
+"distance" from one another. (As you might guess, 97% OTUs are popular.) In some
 cases, the OTU's representative sequence will be the sequence of its most
 abundant member; in other cases, the OTU's representative sequence is some
 mish-mash of its member sequences.
@@ -151,7 +209,11 @@ The principle advantage of *de novo* clustering is that it won't throw out abund
 
 ### Reference-based methods
 
-In reference-based OTU calling, the OTUs are specified ahead of time. Usually these OTUs are in a database like Greengenes, which was made by calling *de novo* OTUs on some large set of data. Greengenes is such a popular database that sometimes people use "OTU" to mean "the 97% OTUs in Greengenes".
+In reference-based OTU calling, the OTUs are specified ahead of time. Usually
+these OTUs are in a database like Greengenes, which was made by calling *de
+novo* OTUs on some large set of data. Greengenes is such a popular database
+that I often heard "OTU" used to mean "the 97% OTUs in Greengenes", although
+that usage is becoming less common as denoising becomes more popular.
 
 The principle advantages of reference-based calling are:
 
@@ -169,7 +231,7 @@ don't need to worry about them yourself.
 
 [^embarr]: I didn't make that up; it's a real computer science term.
 
-The major weakness of reference-based methods can be dastardly and insidious:
+The major weakness of reference-based methods are insidious:
 if a sequence in your query dataset doesn't match a sequence in the database, what do
 you do? Frighteningly, many methods just throw it out without telling you. If
 you work in the human gut microbiome, this might not bother you, since the gut
@@ -223,14 +285,12 @@ comparing a sequence to existing OTUs, the RDP classifier breaks up the sequence
 into *k*-mers (all subsequences of the original sequence that have length *k*)
 and compares the *k*-mer content of that sequence to a big database that knows
 how *k*-mer content relates to taxonomy. The practical advantage to this is that
-RDP gives *confidences*[^utax] to each level of the taxonomic assignment. For example,
+RDP gives *confidences* to each level of the taxonomic assignment. For example,
 a sequence might definitely be from some phylum (99%), but it might be difficult
 to specify its class (80%) and nearly impossible to identify its order (30%). In
 contrast, using the Greengenes approach, the same sequence might happen to hit
 an OTU that is classified all the way down to the species, and you would mistakenly
 think that your sequence had a lot of taxonomic information in it.
-
-[^utax]: I'm excited for when Robert Edgar, maker of `usearch`, will publish a paper about [UTAX](http://www.drive5.com/usearch/manual/utax_algo.html), which he says will be faster than RDP and will give "informative" confidence values.
 
 ### Distribution-based methods
 

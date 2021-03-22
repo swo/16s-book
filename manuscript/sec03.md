@@ -4,14 +4,16 @@ Hooray, you have sequence data! Now what? I'll assume you did paired-end sequenc
 
 ## Raw data and metadata
 
+### Expected raw data files
+
 Before trying to process your dataset, be sure you have the appropriate raw data[^raw_data] and metadata.
 In all cases, this means you'll need one set of reads.
 For Illumina, this means a *fastq* file that might have a name like:
 
     130423Alm_D13-1939_1_sequence.fastq
 
-This filename is typical for raw sequencing data: it has information about the date, the
-group that requested the sequencing, then something about the specifics of the sequencing
+This filename is typical for raw sequencing data: it has information about the date (2013-04-23), the
+group that requested the sequencing (Alm Lab), then something about the specifics of the sequencing
 run. The `_1_` indicates that these were forward reads. (Forward read files might have `_R1_`
 in place of `_1_` in the filename.)
 
@@ -25,15 +27,18 @@ most cases, the two pairs of a read appear in analogous places in the two files
 (i.e., the forward read entry starting on line *x* in the forward read file
 corresponds to the reverse read starting on line *x* in the reverse reads file).
 
-In some cases, the data might be delivered to you having already been split
+### Demultiplexing
+
+It is now standard practice for delivered to you to have already been split
 into samples (or *demultiplexed*). This means your (forward, or reverse) reads
 are not in one big file, they are in multiple files, each named (or in a subfolder
 that is named) that indicates that those are reads belonging to a certain sample.
+
 If you data are not demultiplexed (i.e., you only have one big file of forward
-reads), then you will also need the *barcode* or *index reads*. Depending on your Illumina version, this
-information might be in different places. In some datasets, it's in the file
-with the forward reads. For example, the file I mentioned above, the first line
-is
+reads), then you will also need the *barcode* or *index reads*. Depending on
+your Illumina version, this information might be in different places. In some
+datasets, it's in the file with the forward reads. For example, the file I
+mentioned above, the first line is
 
     @MISEQ578:1:1101:15129:1752#CCGACA/1
 
@@ -47,19 +52,29 @@ This is the information about what barcode goes with what sample. A common
 gotcha in 16S data processing is that the barcode map might have barcodes
 that are reverse complements of what are in the samples.
 
-Finally, you might also need the *primer sequences*. These are the sequences of
-the primers used in the 16S amplification. In some cases, these have already
-been removed when you get your data. In other cases, you will have to remove
-them yourself. Two of the most common gotchas I experience in 16S data
-processing have to do with primers: (i) you think the primers have been
-pre-removed but they are actually still present and (ii) you think you have the
-sequences of the primers but you actually have the reverse complements of those
+### Primer sequences
+
+It is also now standard practice to remove the primer sequences before handing
+the data to researchers. If the primers haven't already been removed, you'll
+need to remove them yourself, which requires that you know what the foreward
+and reverse primer sequences are.
+
+Two of the most common "gotcha's" I experienced as a graduate student when
+processing 16S data had to do with primers: (i) I thought the primers had been
+pre-removed when they were actually still present and (ii) I thought I had the
+sequences of the primers but I actually had the reverse complements of those
 primers.
 
-In summary, you might need as much as:
+### Summary of expected files
 
-- Forward reads
-- Reverse reads
+Overall, you will likely need:
+
+- Demultiplexed forward reads, with one file per sample
+- Demultiplexed reverse reads, with one file per sample
+
+However, depending on how the data were delivered to you, you might also
+need:
+
 - Barcode reads
 - Barcode map
 - Primer sequences
@@ -67,6 +82,7 @@ In summary, you might need as much as:
 In general, it's very useful to ask for or search for
 this entire list of things when you're starting to analyze a data set from
 scratch.
+
 If you download a dataset or get it from a collaborator, it might come in an
 already-processed format. Depending on your purposes, it might be fine to use
 that data, which will look similar to something we'll get a little further down
@@ -78,20 +94,19 @@ them before you try to get to work!
 
 16S data analysis breaks down into a few steps:
 
-### Phase 0 (pre-processing).
+### Phase I: Preprocessing
 
-This is the practical, devoid-of-theory step in which you get (*a*) the data
-you have into (*b*) the format you need it in so that you can (*c*) feed it
-into whatever software you are using for the next step.
-This usually means converting the raw data and metadata into a file
-format that your software knows how to handle, sifting out the barcode reads,
-that sort of thing.
+This initial step is mostly about getting the data organized. This is where you
+confirm that the data are in the format that you expect, and you make any
+tweaks you want to before moving on into processing proper. There are two
+processing steps, already mentioned above, that now commonly happen before you
+as a researcher will even see the data. In fact, these steps are now so routine
+that they are rarely reported as part of the methods in research papers. However,
+there is still a nonzero amount of decision-making that goes into how these steps
+are done, so I include them in this Phase I.
 
-### Phase I
-
-These steps take the raw data and turn it into biologically relevant stuff.
-There is some freedom about the order in which they can be done.
-
+- *Demultiplexing* (or "splitting"). The man-made barcode sequences are
+  replaced by the names of the samples the sequences came from.
 - *Removing* (or "trimming") *primers*. The primers are a man-made thing. If
   there was a mismatch between the primer and the DNA of interest, you'll only
   see the primer. In this sense, the primer sequence masks the true biological
@@ -100,6 +115,14 @@ There is some freedom about the order in which they can be done.
   DNA of interest, but the cost is that, for the most part, the primer
   sequences matched the biological DNA pretty well. Regardless of the tradeoff,
   common practice is to cut off the primers.
+
+### Phase II: Cleaning
+
+These steps take the raw data and turn it into biologically relevant stuff.
+There is some freedom about the order in which they can be done. I separate
+these steps out from preprocessing because the choices you make here can
+substantially affect your data.
+
 - *Quality filter* (or "trim") reads. For every nucleotide in every read, the
   sequencer gives some indication of its assuredness that that base is in fact
   the base the sequencer reported. This assuredness is called *quality*: if a
@@ -115,8 +138,6 @@ There is some freedom about the order in which they can be done.
   in the middle positions is hopefully greater than the quality of either of
   the two reads that produced it. There's no such thing as "merging" for
   single-end sequencing.
-- *Demultiplexing* (or "splitting"). The man-made barcode sequences are
-  replaced by the names of the samples the sequences came from.
 
 
 [^4]: Annoyingly, it's my experience that the first reads in the raw data are
@@ -129,9 +150,23 @@ There is some freedom about the order in which they can be done.
 
 ![Merging aligns reads, makes a new sequence, and computes new quality scores. Adapted from the `usearch` manual.](images/merge-quality.png)
 
-### Phase II
+### Phase III: Denoising
 
-These steps compact the data and make it easier to work with when calling OTUs. They can happen simultaneously.
+Denoising is the process of accounting for errors inherent in sequencing
+technology, especially the Illumina platform. In short, denoising "corrects"
+sequencing error, decreasing the diversity of sequences in the data that are
+due to technological error rather than to true biological diversity.
+Two important implementations of
+denoising are [DATA2](http://dx.doi.org/10.1038/nmeth.3869) and
+[Deblur](http://dx.doi.org/10.1128/mSystems.00191-16).
+
+The work of denoising
+was previously done as a part of operational taxonomic unit (OTU) calling.
+Denoising and OTU calling are sufficiently conceptually complex and
+historically intertwined that I will discuss them separately in the next
+chapter.
+
+This step implicitly includes two other steps that were traditionally treated separately:
 
 - *Dereplicating*. There are fewer *sequences* (strings of `ACGT`) than there
   are *reads*. This step identifies the set of unique sequences, which is
@@ -143,15 +178,17 @@ These steps compact the data and make it easier to work with when calling OTUs. 
 [^3]: In archaeology, an artifact's _provenience_ is the place within the
   archaeological site where it was found.
 
-### Phase III: OTU calling
+### Phase IV: OTU calling
 
-This is a complex enough endeavor that I will break it out into a separate section.
-Roughly, OTU calling (or "picking") assigns every dereplicated sequence to a group (called an OTU).
-You can combine the sequence-to-OTU information from OTU calling with the
-sequence-to-sample-counts information from proveniencing to make an OTU table that
-shows how reads mapping to each OTU appear in each sample.
+As mentioned above, calling (or "picking") operational taxonomic units (OTUs)
+is a conceptually and historically complex topic, so I will treat it in a
+separate chapter. In short, OTU calling (or "picking") assigns every
+dereplicated sequence to a group, or OTU. You can combine the sequence-to-OTU
+information from OTU calling with the sequence-to-sample-counts information
+from proveniencing to make an OTU table that shows how reads mapping to each
+OTU appear in each sample.
 
-### Phase IV: Fun & profit.
+### Phase V: Analysis
 
 The part where you actually use your data! This part is outside the scope of this work.
 I do, however, encourage you to use the same intellectual attitude that's promulgated
@@ -163,7 +200,7 @@ used it.
 ### Removing primers
 
 In an ideal world, this is straightforward: you find the piece of your
-read that matches the primer, and you pop it off. 
+read that matches the primer, and you pop it off.
 In practice, there are two important considerations:
 
 - *Where do you look for the primer?* Does the primer start at the very first
@@ -194,9 +231,6 @@ paper](http://dx.doi.org/10.1093/bioinformatics/btv401) from the maker of
 `usearch`.
 
 [^5]: If you had two paired-end reads that didn't overlap but you were somehow sure of the final amplicon size, then you could insert a bunch of `N`'s in between. This is an advanced and specialized topic.
-
-I think it's worth noting that `usearch`, which will come up later, is a very
-popular tool for merging sequences.
 
 ### Quality filter
 
@@ -236,7 +270,6 @@ I think it makes more sense to see merge, see what the resulting qualities
 look like, and make a decision based on that (rather than decide what you think
 would make a good merged product before you even do the merge).
 
-
 ### Demultiplexing
 
 This step is similar to primer removal:
@@ -251,29 +284,6 @@ given a barcode read, to compare that read with all the known barcodes (i.e.,
 the barcodes you're looking for). If the known barcode that matches best has
 more than one mismatch with the barcode read, call that read "bad" and discard
 it.
-
-### Dereplicating, denoising, and proveniencing
-
-Proveniencing is simple: you just look through the list of unique sequences
-(i.e., the dereplicated reads) and the list of all reads, counting up how many
-times each sequence appears in each sample. Dereplication has one practical
-question associated with it:
-
-- *How many times does a sequence have to appear for me to believe it?*
-In most data sets, there is a "long tail" of sequences: there are a
-many sequences that have a small number of counts. I often use a dumb way to
-decide which sequences are "real": I just drop the sequences that only appear once
-in the entire data set.
-
-My simple choice is a hack that does some simple denoising and reduces the
-size of the resulting data. More intelligent denoising uses a model to infer
-which reads in the dereplicated set are
-"real" and which ones are due to sequencing error. There is a
-whole literature about denoising, so I will just mention
-[*DADA*](http://dx.doi.org/10.1186/1471-2105-13-283), which
-seems to be the best algorithm available.[^dada]
-
-[^dada]: In case you didn't get the pun, Dada is the name of an an art movement about, in part, creating irrational, chaotic art.
 
 ### Chimera removal (or "slaying")
 
