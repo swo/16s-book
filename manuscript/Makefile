@@ -1,4 +1,4 @@
 .PHONY: pdf
 
 pdf:
-	pandoc *.md -o ../primer16s.pdf
+	pandoc -s --number-sections *.md -o ../primer16s.pdf

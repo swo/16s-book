@@ -1,16 +1,10 @@
-# Practice
+# Nuts and bolts of 16S data processing
 
-As you can see, there are a lot of in's, out's, and what-have-you's
-(IOWHYs) to processing 16S data. Rather than giving you the fish of some
-monolithic pipeline, I'd rather try to teach you as much about fish as
-you'll find useful. There are plenty of websites that can give you fish
-but not many that can introduce you to the IOWHYs.
-
-In the rest of this document, I'll assume you're in a Unix/Linux/Mac
-world. If you're on Windows, you'll essentially need to get to the Unix
-world with a tool like Cygwin. I didn't make up those rules, but that's
-how it is: all the serious bioinformatics are done in the non-Windows
-world.
+As the microbiome field has matured, there are ever-better tools and pipelines
+for processing 16S data. These resources can save you time and can enhance
+reproducibility, but they are no substitute for a deep understanding of the
+underlying processes. This chapter steps through the files and algorithms used
+in the more mundane steps of 16S processing.
 
 ## File formats
 
@@ -24,9 +18,11 @@ Fastq files usually have the extension `.fastq` or `.fq`. Fastq files
 are human-readable. They are made up of *entries* that each correspond
 to a single read. Every entry is four lines.[^line] A well-formed fastq
 file has a number of lines that is a multiple of four. You can see how
-many lines are in a file using the terminal command `wc -l foo.fq`.
+many lines are in a file using the terminal command `wc -l foo.fq`[^unix].
 Divide that by four to get the number of entries. The lines in the entry
 are:
+
+[^unix]: In this example and what follows, I assume that you are working in a Unix/Linux/Mac environment. If you are using Windows, you will need to set up the Windows Subsystem for Linux, use a container system like Docker, or do your work on a computing cluster.
 
 [^line]: Confusingly, the definition of a "line" on Windows is different from Unix/Linux/Mac. If you ever pass data between these two computer systems, make sure that have adjusted the line endings using `dos2unix` (or `unix2dos`). You can also look up how to do this with `tr`, etc.
 
@@ -77,10 +73,7 @@ is.[^excl]
   has an ASCII value of 73, and the offset means you subtract the offset 33
   from the ASCII value 73 to get the quality score 40. The other common offset
   is 64: in that case, the character `I` encodes quality 9. Illumina used a
-  64-offset for a while, but newer machines use a 33-offset. You can tell the
-  difference getting familiar with the characters used and just looking by eye,
-  by running your pipeline and seeing if it breaks, or by using a tool like
-  `usearch -fastq_chars`.
+  64-offset for a while, but newer machines use a 33-offset.
 [^plusline]: The original fastq
   [specification](http://dx.doi.org/10.1093/nar/gkp1137)
   (doi:10.1093/nar/gkp1137) allowed the sequence and quality information to run
