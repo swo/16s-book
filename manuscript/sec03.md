@@ -6,6 +6,11 @@ reproducibility, but they are no substitute for a deep understanding of the
 underlying processes. This chapter steps through the files and algorithms used
 in the more mundane steps of 16S processing.
 
+![Overview of the 16S data processing and analysis process. Note the
+nonlinearities in the process; there may be more than one way to proceed
+through data processing and analysis. Reproduced from QIIME 2
+documentation.](images/qiime2-overview.png)
+
 ## Phase I: Preprocessing
 
 Before talking about how to preprocess the data, it's important to have a

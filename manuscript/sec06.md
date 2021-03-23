@@ -1,5 +1,3 @@
----
-
 # Parting wisdom
 
 I hope this primer has given you exposure to fundamental concepts in 16S data
@@ -45,10 +43,12 @@ choice of denoising algorithm of OTU picking method. Pipeline software like
 QIIME 2 can, through the setting of default values, create the illusion that
 some of these choices are not important, or even that you didn't need to make
 a choice. I only want to emphasize again that, in 16S data processing, the devil
-can be in the details[^devil].
+can be in the details.[^devil]
 
 ## Get help
 
 16S processing and analysis is a rapidly evolving and complex field. Even if
 you do develop strong computational skills, it is very wise to collaborate with
 experts.
+
+Happy processing, and good luck!

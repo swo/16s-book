@@ -1,18 +1,8 @@
-# 16S Primer
+# Processing 16S data: an informal primer about 16S rRNA amplicon data
 
-This is an informal introduction to the theory of 16S data processing. I
-compiled these after giving a few workshops on this topic, mostly to the Alm
-Lab at MIT.
-
-This is the same content as was published on
-[Leanpub](https://leanpub.com/primer16s).
-
-## To do
-
-- Finish final section
-- Clean up formatting for Pandoc (not Leanpub) style Markdown
-- Update references (e.g., Qiime 2, DADA 2, etc.)
-- Update README
+- 1st edition (circa 2015): Workshop material for the Alm Lab at MIT
+- 2nd edition (2018): Published on [Leanpub](https://leanpub.com/primer16s)
+- 3rd edition (2021): Material reorganized and updated to include denoising and QIIME 2
 
 ## Author
 
