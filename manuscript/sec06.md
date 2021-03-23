@@ -20,15 +20,13 @@ code.[^jp]
   processing for 16S, but for the foreseeable future it's going to look like
 the scene in *Jurassic Park* where Samuel L. Jackson is hunched over a computer
 muttering "Access main program...  Access main security... Access main program
-grid... [...] Hate this hacker crap!"
+grid..."
 
 The second key skill is to learn a programming language with decent
-bioinformatics and statistics packages. Python and R are good choices. After
-many years of fitfully using tools like Mathematica, I spent one week during my
-Masters degree to read and do all the exercises in Mark Lutz's _Learning
-Python_. It was one of the best investments I've ever made. The problems on
-Rosalind (www.rosalind.info) are a fun way to learn coding while focusing on
-bioinformatic problems in particular.
+bioinformatics and statistics packages. Python and R are good choices. As a
+Masters student, after many years of fitfully using tools like Mathematica,
+I spent one week reading and doing all the exercises in Mark Lutz's _Learning
+Python_. It was one of the best investments I've ever made.
 
 ## Be a data and algorithm detective
 

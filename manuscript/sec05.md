@@ -1,6 +1,6 @@
 # Using QIIME 2
 
-In previous versions of this primer, I essentially encouraged readers to
+In previous versions of this primer, I encouraged readers to
 develop their own scripts for 16S data processing. I did this in part because
 the two, most user-friendly pipelines at the time, QIIME 1 and mothur, had
 characteristics that left me very unsatisfied. The field was also younger, and
@@ -15,9 +15,7 @@ QIIME 2 has extensive and ever-improving online documentation. Rather than
 repeat that material here, I will emphasize a few important points about
 working with QIIME 2.
 
-## Key concepts in QIIME 2
-
-### QIIME 2 consists of plugins
+## QIIME 2 consists of plugins
 
 The QIIME 2 documentation describes it as a "decentralized microbiome analysis
 package". It is a collection of individual tools, called *plugins*, with common
@@ -27,7 +25,7 @@ scores. Another plugin *vsearch* has a method *cluster-features-de-novo* that
 does *de novo* OTU clustering. Every step in the 16S analysis process maps onto
 a method in one of the QIIME 2 plugins.
 
-### QIIME 2 packages data in artifacts
+## QIIME 2 packages data in artifacts
 
 QIIME 2 methods do not run on human-readable data files like fastq's and
 fasta's. Instead, those human-readable files need to be *imported* into QIIME 2
@@ -35,7 +33,7 @@ fasta's. Instead, those human-readable files need to be *imported* into QIIME 2
 some helpful metadata, called a *provenance*, which tracks the history of what
 methods have been run on a set of data.[^prov2] If you want to directly interact
 with the data at any step in a QIIME 2 analysis, you will need to export it
-out of the artifact form.
+out of the artifact format.
 
 [^prov2]: In the art world, *provenance* refers to the history of custody and
   ownership of a work of art. A reliable provenance is an important part of how
@@ -43,10 +41,10 @@ out of the artifact form.
 
 ### QIIME 2 runs in compartmentalized computing environments
 
-A challenge with a complex software project with QIIME 2 is that its software
+A challenge with a complex software project like QIIME 2 is that its software
 dependencies can conflict with other software dependencies. QIIME 2 avoids
-these problems using the modern solution, which is to use a compartmentalized
-environment, either a virtual environment (via `conda` or a similar tool) or a
+these problems using the modern solution of compartmentalized
+environments, either a virtual environment (via `conda` or a similar tool) or a
 virtual machine (such as Docker). As a user, this may introduce a greater
 learning curve to figure out how to initially install the software, but it will
 reduce downstream problems.
@@ -68,10 +66,16 @@ values you selected, even if you selected the default ones.
 As a second example, some of the methods in QIIME 2 rely on the USEARCH
 algorithm[^edgar] to match query sequences to database sequences, such as when
 performing reference-based OTU calling. At the risk of making a mountain of a
-molehill, I dive a bit into this example, to demonstrate the complexity that
+molehill, I dive a bit into the details of USEARCH to demonstrate the complexity that
 can underlie QIIME 2's pleasant user interface.
 
 [^edgar]: Edgar (doi:10.1093/bioinformatics/btq461)
+
+USEARCH is an algorithm used to match query sequences to database sequences. It
+is used, for example, to do reference-based OTU calling. One might expect that,
+given the same input sequence and the same database, the algorithm would also
+match that query sequence with the same database sequence. In fact, the picture
+is a little more complicated.
 
 Critically, USEARCH is a *heuristic* algorithm. This means that it applies
 shortcuts to achieve faster speed:
@@ -80,17 +84,18 @@ shortcuts to achieve faster speed:
 2. Use heuristics to speed up the sequence alignments.
 3. Apply stopping criteria. The default is to stop after a single hit that meets the accepting criteria.
 
-The first rule means that your query sequence will be compared to database
-sequences according to some order; the third rule means that the first of these
+The first shortcut means that your query sequence will be compared to database
+sequences according to some order; the shortcut rule means that the first of these
 database sequences that is a sufficiently good match to your query will be
 delivered as the result. For example, if you are assigning your OTUs by making
 a search to the 97% OTUs in Greengenes, then the first database sequence that
 is at least 97% similar to your query will be considered its parent OTU.
 
-This would be of no concern if the comparisons were performed in the order of
-decreasing sequence similarity. Then the first hit would be the best one.
-This, however, puts the cart before the horse: you need to somehow *guess*
-which sequence will be the best match before actually performing the alignment.
+The third shortcut would be of no concern if the comparisons were performed in
+the order of decreasing sequence similarity, so that the first hit was always
+the best one. However, USEARCH needs to somehow guess, ahead of performing the
+actual alignment, which sequence in the database will be a good match to the
+query sequence.
 
 USEARCH guesses the sequence similarity between two sequences using the *U*
 value (which is the U in USEARCH). *U* is the number of unique *words* shared
@@ -103,9 +108,12 @@ are inferred using tables of optimal choices derived from running USEARCH
 on databases of sequences using different values of the identity threshold.
 
 This heuristic selection of database entries for comparison can lead to some
-quirky results, which I described in detail elsewhere[^devil]. In short,
-even reference-based OTU calling, which is expected to be stable and replicable,
+quirky results, which I described in detail elsewhere.[^devil] In short, even
+reference-based OTU calling, which is expected to be stable and replicable,
 does not necessarily produce the results you might *a priori* think it should.
+Entire sequences and genera of bacteria can appear or disappear from your
+dataset depending on your choice of parameters for USEARCH.
+
 The take-away is that a user-friendly interface cannot make the underlying
 algorithms user-friendly. The cutting edge is often sharp.
 
