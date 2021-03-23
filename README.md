@@ -9,8 +9,10 @@ This is the same content as was published on
 
 ## To do
 
+- Finish final section
 - Clean up formatting for Pandoc (not Leanpub) style Markdown
 - Update references (e.g., Qiime 2, DADA 2, etc.)
+- Update README
 
 ## Author
 

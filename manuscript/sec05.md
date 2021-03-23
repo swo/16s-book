@@ -1,44 +1,80 @@
-# Nuts and bolts of 16S data processing
+# Using QIIME 2
 
-## Existing tools
+In previous versions of this primer, I essentially encouraged readers to
+develop their own scripts for 16S data processing. I did this in part because
+the two, most user-friendly pipelines at the time, QIIME 1 and mothur, had
+characteristics that left me very unsatisfied. The field was also younger, and
+the methodology was more in flux, so it seemed wiser to get closer to the nuts
+and bolts of things. Now, however, I enthusiastically recommend using QIIME 2
+for 16S data processing.[^why]
 
-Everything in this document up to this point will help you be critical
-of an analysis pipeline. This is true whether you use an existing
-pipeline, work with someone who has a pipeline, or make your own
-pipeline. The more you want to be involved in looking at and working
-with your own data, the more computer skills you'll need. You'll also
-need more of your own skills if you want to do more creative analysis or
-be more sure of exactly what's being done with your data.[^fault]
+[^why]: The two important changes for me were the plugin system and advances in
+  virtualization software and virtual environment management.
 
-[^fault]: This all being said, I don't fault anyone for using tools that
-  actually *work*. Some of the theoretically "nicer" tools aren't coded in a
-  way that makes them easy to use, robust, or capable of working on big
-  datasets. Many theoretically nice tools don't have good documentation, which
-  makes them essentially unusable.
+QIIME 2 has extensive and ever-improving online documentation. Rather than
+repeat that material here, I will emphasize a few important points about
+working with QIIME 2.
 
-### QIIME
+## Key concepts in QIIME 2
 
-The great and mighty [QIIME](http://www.qiime.org) is a big part of the 16S
-data processing landscape. QIIME was one of the two big pipelines used to
-analyze the HMP data. I see the taxa plots produced by QIIME in many papers.
+### QIIME 2 consists of plugins
 
-### usearch
+The QIIME 2 documentation describes it as a "decentralized microbiome analysis
+package". It is a collection of individual tools, called *plugins*, with common
+interfaces. For example, there is a plugin called *quality-filter* that has a
+"method" *q-score* that filters 16S sequences in a fastq file based on quality
+scores. Another plugin *vsearch* has a method *cluster-features-de-novo* that
+does *de novo* OTU clustering. Every step in the 16S analysis process maps onto
+a method in one of the QIIME 2 plugins.
 
-The great and mighty [`usearch`](http://www.drive5.com/usearch) underlies a lot
-of 16S data processing.  A lot of QIIME is built on the back of `usearch`.
-`usearch` is a single program that has an ever-growing number of
-functionalities (including, the algorithms USEARCH, UCLUST, and UPARSE).
+### QIIME 2 packages data in artifacts
 
-Because USEARCH is so widely used, I will take a moment to dive a little more
-deeply into its workings. I have seen a lot of confusion arise because of
-USEARCH, mostly because users (like me!) expected USEARCH to do one thing when,
-in fact, it does something else. The caveats I'm going to lay out apply if
-you're using USEARCH via `usearch`, QIIME, or another pipeline.
+QIIME 2 methods do not run on human-readable data files like fastq's and
+fasta's. Instead, those human-readable files need to be *imported* into QIIME 2
+*artifacts*. This importing process compresses the original data and also adds
+some helpful metadata, called a *provenance*, which tracks the history of what
+methods have been run on a set of data.[^prov2] If you want to directly interact
+with the data at any step in a QIIME 2 analysis, you will need to export it
+out of the artifact form.
 
-Critically, USEARCH is a *heuristic* algorithm. This means that it applies some
-shortcuts to achieve faster speed (i.e., orders of magnitude faster than simple
-BLAST). In the [paper](http://dx.doi.org/10.1093/bioinformatics/btq461), Mr. Edgar
-explains that USEARCH gets its speed-up from three places.
+[^prov2]: In the art world, *provenance* refers to the history of custody and
+  ownership of a work of art. A reliable provenance is an important part of how
+  you determine if a work of art is authentic.
+
+### QIIME 2 runs in compartmentalized computing environments
+
+A challenge with a complex software project with QIIME 2 is that its software
+dependencies can conflict with other software dependencies. QIIME 2 avoids
+these problems using the modern solution, which is to use a compartmentalized
+environment, either a virtual environment (via `conda` or a similar tool) or a
+virtual machine (such as Docker). As a user, this may introduce a greater
+learning curve to figure out how to initially install the software, but it will
+reduce downstream problems.
+
+## QIIME 2 still relies underlying algorithms and your parameter choices
+
+The plugin concept means that QIIME 2's underlying algorithms are fairly
+transparent. This does not mean, however, that everything that nothing that
+QIIME 2 does will be surprising or, to put it bluntly, bad. QIIME 2 is only as
+good as its underlying algorithms and the appropriateness of the parameters you
+supply it.
+
+For example, most pipeline software, QIIME 2 included, will allow many
+parameters to have default values. In many cases, these values will be
+appropriate for your data. In others, they may lead to very different results.
+The onus is on you as a researcher to understand the merit of the parameter
+values you selected, even if you selected the default ones.
+
+As a second example, some of the methods in QIIME 2 rely on the USEARCH
+algorithm[^edgar] to match query sequences to database sequences, such as when
+performing reference-based OTU calling. At the risk of making a mountain of a
+molehill, I dive a bit into this example, to demonstrate the complexity that
+can underlie QIIME 2's pleasant user interface.
+
+[^edgar]: Edgar (doi:10.1093/bioinformatics/btq461)
+
+Critically, USEARCH is a *heuristic* algorithm. This means that it applies
+shortcuts to achieve faster speed:
 
 1. Search for a match according to a decreasing expected sequence similarity.
 2. Use heuristics to speed up the sequence alignments.
@@ -67,155 +103,10 @@ are inferred using tables of optimal choices derived from running USEARCH
 on databases of sequences using different values of the identity threshold.
 
 This heuristic selection of database entries for comparison can lead to some
-quirky results. When working on a mouse microbiome project, I found that many
-sequences in my dataset were very similar (say, one nucleotide different in a
-250 nucleotide amplicon) but ended up in different 97% OTUs. I've heard stories
-of people who discovered this quirk when they called OTUs *de novo* and using
-reference-based calling. They expected that since their *de novo* and
-reference-based OTUs were both 97%, they should be about the same "size",
-except that reference-based OTU calling would miss some of the OTUs that *de
-novo* calling would catch. In fact, this approach usually leads to *more* OTUs
-in the reference-based calling.
+quirky results, which I described in detail elsewhere[^devil]. In short,
+even reference-based OTU calling, which is expected to be stable and replicable,
+does not necessarily produce the results you might *a priori* think it should.
+The take-away is that a user-friendly interface cannot make the underlying
+algorithms user-friendly. The cutting edge is often sharp.
 
-In light of these weird effects, I caution you to carefully read the `usearch`
-documentation to get a rough sense of what it's doing. I got weird results for
-some years before I started to dig into what `usearch` was actually doing.
-Don't expect it to do something that it doesn't do!
-
-Overall, the nice thing about `usearch` is that
-it's built by someone who's very concerned about making a fast, optimized
-tool. The potentially nice thing about `usearch` is that it's pretty
-low-level: if you want to do some medium-lifting (like primer removal
-and demultiplexing) but not heavy-lifting (like merging, quality
-filtering, clustering, or sequence alignment), then `usearch` is for
-you.
-
-A potentially bad thing about `usearch` is that it's made by a single person
-and is closed source. It also comes with a funny caveat: newer versions of
-`usearch` come in two flavors, free and wildly expensive. This means that mere
-mortals (i.e., non-Broadies) must be content to use the free version, which
-will only process 2 Gb of data at a time.[^vsearch] If you need to call OTUs
-*de novo* from an enormous data set, then you're sunk; if you merely want to
-merge, quality filter, or do alignments, then it's merely annoying.[^split]
-QIIME comes with an older version of `usearch` that doesn't have as many
-features but which also doesn't have the memory restriction.
-
-[^split]: Most other things you do with 16S data are parallelizable: you don't
-  need to hold the entire dataset in memory at once, you just need little parts
-  of it. For example, if you want to use `usearch` to merge a big paired-end
-  dataset, you can split the forward and reverse read files into smaller chunks
-  and merge each pair of chunks one-by-one.
-
-[^vsearch]: The closed-source and the wildly-expensive problems might be solved
-  by an open-source implementation of USEARCH and the other algorithms, as is
-  being developed under the creative name
-  [VSEARCH](http://dx.doi.org/10.7287/peerj.preprints.2409v1), where I think
-  the V stands for "versatile".
-
-### mothur
-
-Similar to QIIME, [mothur](http://www.mothur.org) aims to be "a single
-piece of open-source, expandable software to fill the bioinformatics
-needs of the microbial ecology community". Their website says mothur
-is "currently the most cited bioinformatics tool for analyzing 16S rRNA gene sequences."
-Mothur was the other big pipeline used to analyze the HMP data.
-
-## Your own tools
-
-I've kept yammering about doing things on your own, being critical of
-existing tools, bla bla. How are you supposed to do that?
-
-### The eyes in your head
-
-The best tool in your belt is a curious attitude. Be critical of your
-data at every step in the pipeline. Does it look the way you expect? How
-can you check? It's wise to *look* at your data, and
-look at it a lot, before moving on to the next step. It will also save
-you some headaches later on by knowing what happened in the middle.
-
-### The sweat of your brow
-
-What does it mean to "look" at your data? The answer is that you'll need some
-computational skills. By "computational" I mean "command-line".  This means
-familiarity with the basic tools of the Unix terminal (`cat`, `cd`, `cp`, `ls`,
-`mkdir`, `mv`, `rm`, `head`, `less`, `sed` or `awk`, `wc`, `grep`, and `vi` or
-`emacs`) and the ability to use some programming language.
-
-You *can* open OTU tables in Excel or whatever, but if you try to use the more
-familiar office-sytle software to do the heavy lifting here, you will be
-disappointed. Opening a 5 Gb fastq in Notepad or TextEdit won't be fun. Maybe
-one day we'll have sexy drag-and-drop, hologram-style data processing for 16S,
-but for the foreseeable future it's going to look like the scene in *Jurassic
-Park* where Samuel L. Jackson is hunched over a computer muttering "Access
-main program...  Access main security... Access main program grid... Please!
-Goddamn it! Hate this hacker crap!"
-
-### A programming language
-
-Those simple command-line tools will get you pretty far, but as some point
-you'll want to ask a question of your data or do something to your data
-that isn't exactly standard. At that point, you'll need to be able to
-write a program.
-
-Here are some criteria to help you decide what language is best for you:
-
-- *Support*. You'll have a better time using a language that has good
-  documentation, a large global community of users (who produce informal
-  documentation in places like [StackOverflow](http://www.stackoverflow.com)),
-  and a local community of users, i.e., the person down the hall who can help
-  you figure out what that syntax error means.
-- *Bioinformatics packages.* It's nice to not re-invent the wheel.  Some
-  programming languages have mature, extensive bioinformatics toolkits.
-- *Appropriateness for your purpose*. Compiled programming languages run fast
-  but are slow to develop; scripting languages run slow but are fast to
-  develop. If you're going to be crunching huge datasets that will take days to
-  process, think about a compiled language designed for parallelization. If
-  you're just working on a few small datasets on your own computer, think about
-  a scripting language that's easier to use.
-
-My language of choice for 16S data processing is
-[Python](http://www.python.org). It's a popular language with great
-documentation. The people around me use it. It has a good bioinformatics
-package (`biopython`). It's relatively slow but I don't care because I spend
-much more time programming that I do actually running data.
-
-I think [Perl](http://www.perl.org) used to be the most popular bioinformatics
-programming language, and I think it's being displaced by Python.
-[`R`](http://www.r-project.org) is a great language for analyzing making plots
-and doing statistics on the resulting OTU tables, but it's not super-handy for
-working with raw sequences. Some people will swear by working in C or C++, but
-I think you should wait until you really need a 10-fold speedup before going
-that deep.  Apparently [Matlab](http://www.mathworks.com/products/matlab) has
-some bioinformatics capability.  [Julia](http://julialang.org) might one day be
-a cool option.
-
-## Some early challenges
-
-### Rolling your own
-
-I hear a lot of people say they want to build computational skills.
-The way you do that is by learning more and building stuff. Personal
-anecdote: I worked for a year in a lab that used Fortran to do most
-of its computation. I had previously done most of my computational work
-in Mathematica (I was a physics major). After a few months, I
-took off one full week of work to read and do all the exercises in
-Mark Lutz's _Learning Python_. It was one of the best investments I've
-ever made. You learn more by putting in the time. It will pay off.
-
-Another personal anecdote: after working with QIIME and then with another grad
-student's codebase, I finally decided to write my own [16S processing
-software](https://github.com/swo/caravan) from scratch.  I learned most of
-what's in this document as I learned what I had to do to write that software.
-If starting with a real big kid script that does real data processing sounds
-like too much, try working on the problems at
-[Rosalind](http://www.rosalind.info).  They start out easy and get
-progressively harder. It's a nice way to do something for a half hour and get
-the instant gratification of a gold star.
-
-### Looking at real data
-
-If you're reading this packet, you probably have your own data set in hand. If
-not, two great places to get some data to play with are the HMP project's [raw
-sequences](http://hmpdacc.org/HMR16S) or the data generated in [Caporaso *et
-al.*](http://dx.doi.org/10.1186/gb-2011-12-5-r50) from
-[MG-RAST](http://metagenomics.anl.gov).
+[^devil]: Tsou *et al*. (doi:10.1080/19490976.2020.1747336)
